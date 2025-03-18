@@ -44,14 +44,16 @@ const statusDescriptions = {
   pending: "Product is awaiting approval or processing",
   inactive: "Product is currently inactive or disabled"
 };
+
+interface ProductCard{
+  productName: string;
+  status: string;
+  size: string;
+  onClick: any;
+  showIcon: boolean;
+}
  
-const ProductStatusCard = memo(({
-  productName,
-  status,
-  size = "large",
-  onClick,
-  showIcon = true
-}) => {
+const ProductStatusCard = memo(({productName, status, size = "large", onClick, showIcon = true}:ProductCard) => {
   const getFontSize = () => {
     switch(size) {
       case "small": return "0.875rem";
@@ -105,32 +107,32 @@ const ProductStatusCard = memo(({
 const ProductStatusDemo = () => {
   const products = [
     { name: "Cloud Storage Service", status: "active" },
-    { name: "Analytics Dashboard", status: "pending" },
-    { name: "Authentication API", status: "inactive" },
+    { name: "Cloud Storage Service", status: "pending" },
+    { name: "Cloud Storage Service", status: "inactive" },
     { name: "Cloud Storage Service", status: "active" },
-    { name: "Analytics Dashboard", status: "pending" },
-    { name: "Authentication API", status: "inactive" },
+    { name: "Cloud Storage Service", status: "pending" },
+    { name: "Cloud Storage Service", status: "inactive" },
     { name: "Cloud Storage Service", status: "active" },
-    { name: "Analytics Dashboard", status: "pending" },
-    { name: "Authentication API", status: "inactive" },
+    { name: "Cloud Storage Service", status: "pending" },
+    { name: "Cloud Storage Service", status: "inactive" },
     { name: "Cloud Storage Service", status: "active" },
-    { name: "Analytics Dashboard", status: "pending" },
-    { name: "Authentication API", status: "inactive" }
+    { name: "Cloud Storage Service", status: "pending" },
+    { name: "Cloud Storage Service", status: "inactive" }
   ];
  
   return (
-  <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+  <Box sx={{ marginLeft: 10, marginTop:5, padding: 2 }}>
+    <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
   {products.map((product, index) => (
-          <Grid item xs={2} sm={4} md={4} key={index}>
           <ProductStatusCard
             key={index}
             productName={product.name}
             status={product.status}
             onClick={() => console.log(`Clicked: ${product.name}`)}
           />
-          </Grid>
         ))}
   </Grid>
+  </Box>
   );
 };
  

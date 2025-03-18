@@ -83,7 +83,9 @@ export default function Home() {
 
   const handleLogin = async() =>{
     try{
-      // const response = await axios.get()
+      const response = await axios.get(`https://${ip}`,{
+        
+      });
     }catch(err){
       console.log("Errror occured while login", err);
     }
