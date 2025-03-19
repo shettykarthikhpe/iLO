@@ -18,6 +18,8 @@
     "@mui/material": "^6.4.7",
     "axios": "^1.7.9",
     "framer-motion": "^12.5.0",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
     "kute.js": "^2.2.4",
     "mongoose": "^8.9.2",
     "next": "15.1.2",

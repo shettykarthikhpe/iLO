@@ -1,8 +1,9 @@
 "use client"
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { Box, Card, Typography, Tooltip } from "@mui/material";
 import { Grid, styled } from "@mui/system";
 import { BsInfoCircle } from "react-icons/bs";
+import axios from "axios";
  
 const StatusCard = styled(Card)(({ theme, status }) => ({
   position: "relative",
@@ -24,9 +25,9 @@ const StatusCard = styled(Card)(({ theme, status }) => ({
     bottom: 0,
     width: "6px",
     backgroundColor: {
-      active: "#4CAF50",
+      'OK': "#4CAF50",
       pending: "#FFC107",
-      inactive: "#F44336"
+      'N/A': "#F44336"
     }[status]
   }
 }));
@@ -105,30 +106,41 @@ const ProductStatusCard = memo(({productName, status, size = "large", onClick, s
 });
  
 const ProductStatusDemo = () => {
-  const products = [
-    { name: "Cloud Storage Service", status: "active" },
-    { name: "Cloud Storage Service", status: "pending" },
-    { name: "Cloud Storage Service", status: "inactive" },
-    { name: "Cloud Storage Service", status: "active" },
-    { name: "Cloud Storage Service", status: "pending" },
-    { name: "Cloud Storage Service", status: "inactive" },
-    { name: "Cloud Storage Service", status: "active" },
-    { name: "Cloud Storage Service", status: "pending" },
-    { name: "Cloud Storage Service", status: "inactive" },
-    { name: "Cloud Storage Service", status: "active" },
-    { name: "Cloud Storage Service", status: "pending" },
-    { name: "Cloud Storage Service", status: "inactive" }
-  ];
+  const [products, setProducts] = useState([])
+  const [status, setStatus] = useState([])
+  const [loading, setLoading] = useState(false);
+
+  const fetcher = async()=>{
+    try{
+      setLoading(true)
+      const resp = await axios.get("http://127.0.0.1:5000/api/table");
+      setProducts(resp.data.data[3]);
+      setStatus(resp.data.data[2]);
+      // console.log(resp.data.data[2])
+      setLoading(false)
+    }catch(err){
+      console.log(err)
+      setLoading(false)
+    }
+  }
+
+  useEffect(()=>{
+    fetcher()
+  },[]);
+ 
  
   return (
   <Box sx={{ marginLeft: 10, marginTop:5, padding: 2 }}>
     <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
-  {products.map((product, index) => (
+    {loading && <h1 className="black mt-20 text-align item-center">Loading............</h1>}
+  {!loading && status && products && products.map((product, index) => (
           <ProductStatusCard
+            size=""
+            showIcon={true}
             key={index}
-            productName={product.name}
-            status={product.status}
-            onClick={() => console.log(`Clicked: ${product.name}`)}
+            productName={product}
+            status={status[index]}
+            onClick={() => console.log(`Clicked: ${product}`)}
           />
         ))}
   </Grid>
