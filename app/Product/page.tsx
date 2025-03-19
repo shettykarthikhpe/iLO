@@ -31,9 +31,9 @@ const statusColors = {
 };
 
 const statusIcons = {
-  active: <CheckCircle sx={{ color: "#4CAF50", fontsize: 40 }} />,
+  'OK': <CheckCircle sx={{ color: "#4CAF50", fontsize: 40 }} />,
   pending: <WarningAmber sx={{ color: "FFC107", fontsize: 40 }} />,
-  inactive: <ErrorOutline sx={{ color: "#F44336", fontSize: 40 }} />,
+  'N/A': <ErrorOutline sx={{ color: "#F44336", fontSize: 40 }} />,
 };
 
 interface StatCard {
@@ -263,6 +263,7 @@ const ProductStatusDemo = () => {
                   color={statusColors[status[selectedProduct]]}
                   sx={{ fontWeight: "bold" }}
                 />
+                {statusIcons[status[selectedProduct]]}
               </Box>
             </>
           )}
