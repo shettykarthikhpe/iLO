@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
@@ -8,7 +8,6 @@ import {
 } from "react-icons/fi"
 import ilo from "../public/ilo.png"
 import axios from "axios"
-import { headers } from "next/headers"
 import { Alert } from "@mui/material"
 import { redirect } from "next/navigation";
 
@@ -22,6 +21,9 @@ export default function Home() {
   const [showPassword, setShowPassword] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [pageLoading, setPageLoading] = useState(true)
+  const [alert, setAlert] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState("");
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -61,6 +63,13 @@ export default function Home() {
             handlePush()
           }, 3500)
         }, 3000)
+      }else{
+        setAlert(true);
+        setSuccess(false);
+        setMessage("Invalid credential");
+        setModalOpen(false)
+        setIsLoading(false)
+        setFormSubmitted(false)
       }
       
     }catch(err){
@@ -132,6 +141,9 @@ export default function Home() {
 
   return (
     <div className='dark'>
+      {alert && <Alert variant="filled" severity={success ? "success" : "error"}>
+          {message}
+      </Alert>}
       <div className="flex flex-col md:flex-row h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 overflow-hidden">
         
         <motion.div 
