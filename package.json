@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "python":"python Backend/main.py",
     "build": "next build",
+    "both": "concurrently --kill-others \"npm run dev\" \"npm run python\"",
     "start": "next start",
     "lint": "next lint"
   },
