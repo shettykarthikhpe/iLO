@@ -42,7 +42,7 @@ def table():
         response = client.get('/redfish/v1/Chassis/1/Devices/?$expand=.')
         if response.status == 200:
             print('Chassis information:')
-            # return jsonify(response.dict)
+            # return jsonify(response.dict.FirmwareVersion.Current.VersionString)
             members = response.dict.get('Members', [])
             if not members:
                 print("No data found")
@@ -53,14 +53,23 @@ def table():
             stat= []
             healt= []
             names= []
+            fversion= []
+            cmpIntStatus= []
+            locats= []
+            
             for member in members:
                 device_type= member.get('DeviceType', 'N/A')
                 location= member.get('Location', 'N/A')
                 name= member.get('Name', 'N/A')
-                
                 links= member.get('Links', {})
                 pci= links.get('PCISlot', {})
                 oid= pci.get('@odata.id', 'N/A')
+                
+                ver= member.get('FirmwareVersion',{})
+                cver= ver.get('Current',{})
+                vers= cver.get('VersionString','N/A')
+                
+                cis= member.get("ComponentIntegrityStatus","N/A")
                 
                 status= member.get('Status',{})
                 health= status.get('Health','N/A')
@@ -70,8 +79,11 @@ def table():
                 stat.append([state])
                 healt.append([health])
                 names.append([name])
-            print(tabulate(table_data, headers=['Device Type', 'Location', 'Name', 'Health', 'State', 'Links']))
-            return jsonify({"data":[devices, stat, healt, names]})
+                fversion.append([vers])
+                cmpIntStatus.append([cis])
+                locats.append([location])
+            # print(tabulate(table_data, headers=['Device Type', 'Location', 'Name', 'Health', 'State', 'Links']))
+            return jsonify({"data":[devices, stat, healt, names, fversion, cmpIntStatus, locats]})
         else:
             print('Failed to get chassis information')
         

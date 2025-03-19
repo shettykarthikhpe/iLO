@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "python":"python Backend/main.py",
+    "python": "python Backend/main.py",
     "build": "next build",
     "both": "concurrently --kill-others \"npm run dev\" \"npm run python\"",
     "start": "next start",
@@ -17,6 +17,7 @@
     "@heroui/react": "^2.7.5",
     "@heroui/system": "^2.4.12",
     "@heroui/theme": "^2.4.12",
+    "@mui/icons-material": "^6.4.8",
     "@mui/material": "^6.4.7",
     "axios": "^1.7.9",
     "framer-motion": "^12.5.0",
@@ -35,6 +36,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-router-dom": "^5.3.3",
+    "concurrently": "^9.1.2",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
