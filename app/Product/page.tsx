@@ -4,8 +4,18 @@ import { Box, Card, Typography, Tooltip } from "@mui/material";
 import { Grid, styled } from "@mui/system";
 import { BsInfoCircle } from "react-icons/bs";
 import axios from "axios";
+import { redirect } from "next/navigation";
  
-const StatusCard = styled(Card)(({ theme, status }: any) => ({
+const bgColors:{[key:string]:String}={
+  'OK': "#4CAF50",
+  'pending': "#FFC107",
+  'N/A': "#F44336"
+}
+interface StatCard{
+  theme: any;
+  status: string;
+}
+const StatusCard = styled(Card)<StatCard>(({ theme, status }) => ({
   position: "relative",
   display: "flex",
   alignItems: "center",
@@ -24,11 +34,7 @@ const StatusCard = styled(Card)(({ theme, status }: any) => ({
     top: 0,
     bottom: 0,
     width: "6px",
-    backgroundColor: {
-      'OK': "#4CAF50",
-      'pending': "#FFC107",
-      'N/A': "#F44336"
-    }[status]
+    backgroundColor: bgColors[status]
   }
 }));
  
@@ -77,8 +83,7 @@ const ProductStatusCard = memo(({productName, status, size = "large", onClick, s
         status={status}
         onClick={onClick}
         sx={{ padding: getPadding() }}
-        aria-label={`${productName} - Status: ${status}`}
-      >
+        aria-label={`${productName} - Status: ${status}`} theme={undefined}      >
         <ContentWrapper>
           <Typography
             variant="body1"
@@ -109,6 +114,13 @@ const ProductStatusDemo = () => {
   const [products, setProducts] = useState([])
   const [status, setStatus] = useState([])
   const [loading, setLoading] = useState(false);
+
+  useEffect(()=>{
+    const value = localStorage.getItem("LoggedIn")
+    if(value !="true"){
+      redirect('/')
+    }
+  },[])
 
   const fetcher = async()=>{
     try{

@@ -60,6 +60,7 @@ export default function Home() {
           setFormSubmitted(true)
           setTimeout(() => {
             setModalOpen(false)
+            localStorage.setItem("LoggedIn", "true");
             handlePush()
           }, 3500)
         }, 3000)
