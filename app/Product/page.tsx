@@ -5,7 +5,7 @@ import { Grid, styled } from "@mui/system";
 import { BsInfoCircle } from "react-icons/bs";
 import axios from "axios";
  
-const StatusCard = styled(Card)(({ theme, status }) => ({
+const StatusCard = styled(Card)(({ theme, status }: any) => ({
   position: "relative",
   display: "flex",
   alignItems: "center",
@@ -26,7 +26,7 @@ const StatusCard = styled(Card)(({ theme, status }) => ({
     width: "6px",
     backgroundColor: {
       'OK': "#4CAF50",
-      pending: "#FFC107",
+      'pending': "#FFC107",
       'N/A': "#F44336"
     }[status]
   }
@@ -72,7 +72,7 @@ const ProductStatusCard = memo(({productName, status, size = "large", onClick, s
   };
  
   return (
-    <Tooltip title={statusDescriptions[status]} arrow placement="top">
+    <Tooltip title={" "} arrow placement="top">
       <StatusCard
         status={status}
         onClick={onClick}

@@ -8,6 +8,9 @@ import {
 } from "react-icons/fi"
 import ilo from "../public/ilo.png"
 import axios from "axios"
+import { headers } from "next/headers"
+import { Alert } from "@mui/material"
+import { redirect } from "next/navigation";
 
 export default function Home() {
   const [ip, setIp] = useState("")
@@ -33,6 +36,38 @@ export default function Home() {
     return ipPattern.test(ip)
   }
 
+  const handlePush = ()=>{
+    redirect(`/Product`);
+  }
+
+  const handleLogin = async() =>{
+    try{
+      const response = await axios.post("http://127.0.0.1:5000/api/login",{
+        headers:{
+          'Content-Type':"application/json"
+        },
+        body: {
+          url:ip,
+          username:username,
+          password:password
+        }
+      })
+      if(response.data.success){
+        setTimeout(() => {
+          setIsLoading(false)
+          setFormSubmitted(true)
+          setTimeout(() => {
+            setModalOpen(false)
+            handlePush()
+          }, 3500)
+        }, 3000)
+      }
+      
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   const handleProceed = () => {
     if (!ip) {
       setIpError("IP address is required")
@@ -55,15 +90,7 @@ export default function Home() {
 
   const handleSubmit = () => {
     setIsLoading(true)
-    
-    setTimeout(() => {
-      setIsLoading(false)
-      setFormSubmitted(true)
-      
-      setTimeout(() => {
-        setModalOpen(false)
-      }, 1500)
-    }, 1000)
+    handleLogin();
   }
 
 
@@ -80,17 +107,6 @@ export default function Home() {
       window.removeEventListener('keydown', handleEsc)
     }
   }, [])
-
-  const handleLogin = async() =>{
-    try{
-      const response = await axios.get(`https://${ip}`,{
-        
-      });
-    }catch(err){
-      console.log("Errror occured while login", err);
-    }
-  }
-
 
   if (pageLoading) {
     return (

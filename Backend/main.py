@@ -5,12 +5,16 @@ from tabulate import tabulate
 
 app = Flask(__name__)
 
-@app.route('/api/login', methods=['GET'])
+@app.route('/api/login', methods=['POST'])
 def make_req():
-    url = 'https://10.132.147.215/'
+    dat = request.json
+    data= dat['body']
+    url= data['url']
+    username= data['username']
+    password= data['password']
 
     # Create a Redfish client object and connect to the API
-    client = redfish.redfish_client(base_url=url, username='Administrator', password='GXJYN722')
+    client = redfish.redfish_client(base_url=url, username=username, password=password)
     try:
         resp = client.login(auth=redfish.AuthMethod.SESSION)
         print("hey",resp)
@@ -22,7 +26,6 @@ def make_req():
             return jsonify({"message": 'Failed to get chassis information', "success":True})
     except Exception as e:
          return jsonify({"message":"Failed to Log in", "success":False})
-    
     
 
 @app.route('/api/table', methods=['GET'])
