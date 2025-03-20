@@ -158,6 +158,7 @@ const ProductStatusDemo = () => {
   const [location, setLocation] = useState([]);
   const [version, setVersion] = useState([]);
   const [cIS, setCIS] = useState([]);
+  const [prdVr, setPrdVr] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState<number | null>();
 
   useEffect(() => {
@@ -178,6 +179,7 @@ const ProductStatusDemo = () => {
       setVersion(resp.data.data[4]);
       setCIS(resp.data.data[5]);
       setLocation(resp.data.data[6]);
+      setPrdVr(resp.data.data[7])
       // console.log(resp.data.data[2])
       setLoading(false);
     } catch (err) {
@@ -246,7 +248,7 @@ const ProductStatusDemo = () => {
                 <strong>Location:</strong> {location[selectedProduct]}
               </Typography>
               <Typography variant="body1" sx={{ color: "#555" }}>
-                <strong>Product Version:</strong> {version[selectedProduct]}
+                <strong>Product Version:</strong> {prdVr[selectedProduct]}
               </Typography>
               <Typography variant="body1" sx={{ color: "#555" }}>
                 <strong>Firmware Version:</strong> {version[selectedProduct]}
