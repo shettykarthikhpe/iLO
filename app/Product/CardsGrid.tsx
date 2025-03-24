@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, Paper } from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorIcon from "@mui/icons-material/Error";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import axios from "axios";
 
 const getStatusIcon = (status: string, color: string) => {
   switch (status.toLowerCase()) {
@@ -102,6 +103,22 @@ const memoryCardsData = [
 
 
 const CardsGrid: React.FC = () => {
+  const [summary, setSummary] = useState([]);
+  const [processor, setProcessor] = useState([]);
+
+  const fetcher =async() =>{
+    try{
+      const response = await axios.post("/api/summary");
+      setProcessor(response.data.data)
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  useEffect(()=>{
+    fetcher();
+  },[])
+
   return (
     <Box sx={{ width: "100%", p: 2 }}>
       {/* Parent flex container that wraps all section cards */}
@@ -109,8 +126,8 @@ const CardsGrid: React.FC = () => {
         {/* Each section is wrapped in its own Box.
             The flex property forces each card to take up about 33.33% of the width,
             so you'll have 3 cards per row on larger screens. */}
-        <Box sx={{ flex: "0 0 calc(33.33% - 16px)" }}>
-          {summaryCardsData.map((card, index) => (
+        {/* <Box sx={{ flex: "0 0 calc(33.33% - 16px)" }}>
+          {summary && summary.map((card, index) => (
             <Paper
               key={`summary-${index}`}
               elevation={3}
@@ -126,7 +143,7 @@ const CardsGrid: React.FC = () => {
               <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
                 {card.title}
               </Typography>
-              {card.items.map((item, idx) => (
+              {card['Other']?.map((item, idx) => (
                 <Box
                   key={idx}
                   sx={{
@@ -136,7 +153,7 @@ const CardsGrid: React.FC = () => {
                     py: 0.5,
                   }}
                 >
-                  <Typography variant="body2">{item.label}</Typography>
+                  <Typography variant="body2">{item[idx]} --- {item['AgentlessManagementService']}</Typography>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                     {getStatusIcon(item.status, item.color)}
                     <Typography variant="body2" sx={{ fontWeight: "bold" }}>
@@ -147,44 +164,14 @@ const CardsGrid: React.FC = () => {
               ))}
             </Paper>
           ))}
-        </Box>
+        </Box> */}
         <Box sx={{ flex: "0 0 calc(33.33% - 16px)" }}>
-          {processorCardsData.map((card, index) => (
-            <Paper
-              key={`processor-${index}`}
-              elevation={3}
-              sx={{
-                borderRadius: "12px",
-                p: 2,
-                mb: 2,
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-                {card.title}
-              </Typography>
-              {card.items.map((item, idx) => (
-                <Box
-                  key={idx}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    py: 0.5,
-                  }}
-                >
-                  <Typography variant="body2">{item.label}</Typography>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                    {getStatusIcon(item.status, item.color)}
-                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                      {item.status}
-                    </Typography>
-                  </Box>
-                </Box>
-              ))}
-            </Paper>
+          {processor && processor.map((card, index) => (
+            <div key={index}>
+              <h1 >
+                {card[0]['Name']}
+              </h1>
+            </div>
           ))}
         </Box>
         <Box sx={{ flex: "0 0 calc(33.33% - 16px)" }}>

@@ -180,8 +180,8 @@ def Processort(data: User):
             for cache in response.dict["Oem"]["Hpe"]["Cache"]:
                 Cache.append([cache["Location"], cache["Name"], cache["InstalledSizeKB"]])
             
-        Processor.append([{"Name":response.dict["Model"], "Status":response.dict["Status"], "Speed":response.dict["Oem"]["Hpe"]["RatedSpeedMHz"], "Core":response.dict["Oem"]["Hpe"]["Characteristics"][1], 
-                          "TotalCore": response.dict["TotalCores"], "TotalThreads":response.dict["TotalThreads"],"Cache":Cache}])
+        Processor.append({"Name":response.dict["Model"], "Status":response.dict["Status"], "Speed":response.dict["Oem"]["Hpe"]["RatedSpeedMHz"], "Core":response.dict["Oem"]["Hpe"]["Characteristics"][1], 
+                          "TotalCore": response.dict["TotalCores"], "TotalThreads":response.dict["TotalThreads"],"Cache":Cache})
         return(Processor)
     except Exception as e:
         return ({"error": e})
@@ -238,8 +238,10 @@ def Summary(data:User):
         # Perform some tasks using the Redfish API
         response = client.get('/redfish/v1/Systems/1')
         if response.status == 200:
-            Other.append(response.dict["Oem"]["Hpe"]["AggregateHealthStatus"])
-            return ({"Name":response.dict["Name"], "Model":response.dict["Model"], "Other":Other})
+            # for item in response.dict["Oem"]["Hpe"]["AggregateHealthStatus"]:
+            #     return(response.dict["Oem"]["Hpe"]["AggregateHealthStatus"])
+            Other.append({"AMS":response.dict["Oem"]["Hpe"]["AggregateHealthStatus"]})
+            return ([{"Name":response.dict["Name"], "Model":response.dict["Model"], "Other":Other}])
     except Exception as e:
         return ({"error": e})
     

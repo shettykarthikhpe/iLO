@@ -1,42 +1,86 @@
 "use client"
 import axios from "axios";
-import React from "react";
-import https from 'https'
+import { useEffect, useState } from "react";
+import StatusCard from "../Product/StatusCards";
+import SummaryCard from "../statusCard";
+import ProcessorCard from "../processorCard";
+import MemoryCard from "../memoryCard";
+import DeviceCard from "../deviceCard";
 
-const Page =()=>{
-    
-    const handleLogin = async() =>{
-      const url = "https://10.132.147.210/redfish/v1/Systems"
-      const username = "Administrator";
-      const password = "SZMJKGN6";
-  
-      const encoded = btoa(`${username}:${password}`)
-  
-      const agent = new https.Agent({
-        rejectUnauthorized:false
-      })
-  
-        try{
-            console.log("started")
-            // Make the API call
-            const response = await axios.get(url, {
-              headers:{
-                'Authorization':`Basic ${encoded}`,
-                "rejectUnauthorized": false, 
-              },
-              httpAgent: agent
-            });
-              console.log("done")
-              console.log(response)
-        }catch(err){
-          console.log("Errror occured while login", err);
-        }
-      }
+
+const dummy = () =>{
+    const [processor, setProcessor] = useState();
+    const [summary, setSummary] = useState([]);
+    const [device, setDevice] = useState();
+    const [memory, setMemory] = useState();
+    const [ploading, setPLoading] = useState(false)
+    const [sloading, setSLoading] = useState(false)
+    const [dloading, setDLoading] = useState(false)
+    const [mloading, setMLoading] = useState(false)
+
+
+  const deviceFetcher =async() =>{
+    try{
+      setDLoading(false)
+      const response = await axios.post("/api/device");
+      setDevice(response.data.data)
+      setDLoading(true)
+    }catch(err){
+      setDLoading(false)
+      console.log(err)
+    }
+  }
+
+  const memoryFetcher =async() =>{
+    try{
+      setMLoading(false)
+      const response = await axios.post("/api/memory");
+      setMemory(response.data.data)
+      setMLoading(true)
+    }catch(err){
+      setMLoading(false)
+      console.log(err)
+    }
+  }
+
+  const processorFetcher =async() =>{
+    try{
+      setPLoading(false)
+      const response = await axios.post("/api/processor");
+      setProcessor(response.data.data)
+      setPLoading(true)
+    }catch(err){
+      setPLoading(false)
+      console.log(err)
+    }
+  }
+
+  const summaryFetcher =async() =>{
+    try{
+      setSLoading(false)
+      const response = await axios.post("/api/summary");
+      setSummary(response.data.data)
+      setSLoading(true)
+    }catch(err){
+      setSLoading(false)
+      console.log(err)
+    }
+  }
+  useEffect(()=>{
+    processorFetcher()
+    deviceFetcher()
+    summaryFetcher()
+    memoryFetcher()
+  },[])
+
     return(
-        <div className="bg-white mt-10 m-30">
-            <button className="Bg-red" onClick={handleLogin}>button</button>
-        </div>
+        <>
+        { sloading && summary && <SummaryCard data={summary} /> }
+        { mloading && memory && <MemoryCard data={memory} /> }
+        { dloading && device && <DeviceCard data={device} />}
+        { ploading && processor &&  <ProcessorCard data={processor} /> }
+        </>
     )
 }
 
-export default Page;
+export default dummy;

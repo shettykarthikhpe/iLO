@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const user_name = "Administrator";
     const password = "GXJYN722";
 
-    const resp = await axios.post("http://127.0.0.1:8000/summary",{
+    const resp = await axios.post("http://127.0.0.1:8000/device",{
         url:url,
         username:user_name,
         password:password
