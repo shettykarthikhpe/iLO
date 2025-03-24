@@ -1,167 +1,351 @@
-
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, Grid, Typography, Paper } from "@mui/material";
-import axios from "axios";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import ErrorIcon from "@mui/icons-material/Error";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-const cardsData = [
-    {
-        title: "Summary",
-        items: [
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "red"},
-        ],
-    },
-    {
-        title: "Processors",
-        items: [
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "gray"},
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-        ],
-    },
-    {
-        title: "Device Inventory",
-        items: [
-            {label: "lorem ipsum......", status: "On", color: "red"},
-            {label: "lorem ipsum......", status: "On", color: "gray"},
-            {label: "lorem ipsum......", status: "On", color: "red"},
-        ],
-    },
-    {
-        title: "Network",
-        items: [
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "gray"},
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-        ],
-    },
-    {
-        title: "Storage",
-        items: [
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "gray"},
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-        ],
-    },
-    {
-        title: "Memory",
-        items: [
-            {label: "lorem ipsum......", status: "On", color: "#17eba0"},
-            {label: "lorem ipsum......", status: "On", color: "gray"},
-            {label: "lorem ipsum......", status: "On", color: "red"},
-        ],
-    },
-]
+const getStatusIcon = (status: string, color: string) => {
+  switch (status.toLowerCase()) {
+    case "warning":
+      return <WarningAmberIcon sx={{ color: "orange", fontSize: 18 }} />;
+    case "risk":
+    case "critical":
+      return <ErrorIcon sx={{ color: "red", fontSize: 18 }} />;
+    case "on":
+    case "ok":
+    case "enabled":
+      return <CheckCircleIcon sx={{ color: "#17eba0", fontSize: 18 }} />;
+    default:
+      return (
+        <Box
+          sx={{
+            width: 10,
+            height: 10,
+            borderRadius: "50%",
+            backgroundColor: color,
+          }}
+        />
+      );
+  }
+};
+
+const summaryCardsData = [
+  {
+    title: "Summary",
+    items: [
+      { label: "Server Power", status: "On", color: "#17eba0" },
+      { label: "UID Indicator", status: "On", color: "#17eba0" },
+      { label: "AMS", status: "warning", color: "gray" },
+    ],
+  },
+];
+
+const processorCardsData = [
+  {
+    title: "Processors",
+    items: [
+      { label: "Processor A", status: "On", color: "#17eba0" },
+      { label: "Processor B", status: "Off", color: "red" },
+      { label: "Processor C", status: "Idle", color: "gray" },
+    ],
+  },
+];
+
+const networkCardsData = [
+  {
+    title: "Memory",
+    items: [
+      { label: "Processor A", status: "On", color: "#17eba0" },
+      { label: "Processor B", status: "Off", color: "red" },
+      { label: "Processor C", status: "Idle", color: "gray" },
+    ],
+  },
+];
+
+
+const storageCardsData = [
+  {
+    title: "Device ",
+    items: [
+      { label: "Processor A", status: "On", color: "#17eba0" },
+      { label: "Processor B", status: "Off", color: "red" },
+      { label: "Processor C", status: "Idle", color: "gray" },
+    ],
+  },
+];
+
+
+const deviceCardsData = [
+  {
+    title: "Network",
+    items: [
+      { label: "Processor A", status: "On", color: "#17eba0" },
+      { label: "Processor B", status: "Off", color: "red" },
+      { label: "Processor C", status: "Idle", color: "gray" },
+    ],
+  },
+];
+
+
+const memoryCardsData = [
+  {
+    title: "Storage",
+    items: [
+      { label: "Processor A", status: "On", color: "#17eba0" },
+      { label: "Processor B", status: "Off", color: "red" },
+      { label: "Processor C", status: "Idle", color: "gray" },
+    ],
+  },
+];
+
 
 
 
 const CardsGrid: React.FC = () => {
-const [loading, setLoading] = useState(false)
-
-  const fetcher = async () => {
-    const url = "http://10.132.147.210"
-    const user_name = "Administrator";
-    const password = "SZMJKGN6";
-    try {
-      const resp = await axios.post("http://localhost:3000/api/summary",{
-        url:url,
-        username:user_name,
-        password:password
-      });
-      cardsData.push(resp.data.data['Other'][0])
-      setLoading(true)
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    fetcher();
-  }, []);
-
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "calc(100vh - 64px)", // Adjust for navbar height
-        paddingTop: "80px", // Prevent overlapping
-        paddingBottom: "20px",
-        width: "100%", // Ensure it spans the full width
-      }}
-    >
-      <Grid 
-        container 
-        spacing={2} 
-        sx={{ 
-          maxWidth: "1100px", 
-          justifyContent: "center", 
-          paddingX: 2 
-        }}
-      >
-        {loading && cardsData.map((card, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Paper 
-              sx={{ 
-                width: "100%", 
-                minHeight: "180px", 
-                bgcolor: "white", 
-                color: "black", 
-                p: 2, 
-                borderRadius: "12px", // Rounded corners
-                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)", 
+    <Box sx={{ width: "100%", p: 2 }}>
+      {/* Parent flex container that wraps all section cards */}
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+        {/* Each section is wrapped in its own Box.
+            The flex property forces each card to take up about 33.33% of the width,
+            so you'll have 3 cards per row on larger screens. */}
+        <Box sx={{ flex: "0 0 calc(33.33% - 16px)" }}>
+          {summaryCardsData.map((card, index) => (
+            <Paper
+              key={`summary-${index}`}
+              elevation={3}
+              sx={{
+                borderRadius: "12px",
+                p: 2,
+                mb: 2,
                 display: "flex",
                 flexDirection: "column",
+                gap: 1,
               }}
             >
-              <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
+              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
                 {card.title}
               </Typography>
-              {loading && card.items?.map((item, idx) => (
-                <Box 
-                  key={idx} 
-                  sx={{ 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "space-between", // Push items to the edges
-                    mb: 1 
+              {card.items.map((item, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    py: 0.5,
                   }}
                 >
                   <Typography variant="body2">{item.label}</Typography>
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Typography 
-                      component="span" 
-                      variant="body2" 
-                      sx={{ color: item.color, fontWeight: "bold", mr: 1 }}
-                    >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    {getStatusIcon(item.status, item.color)}
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
                       {item.status}
                     </Typography>
-                    <Box 
-                      sx={{ 
-                        width: 12, 
-                        height: 12, 
-                        borderRadius: "50%", 
-                        backgroundColor: item.color, 
-                      }} 
-                    />
                   </Box>
                 </Box>
               ))}
             </Paper>
-          </Grid>
-        ))}
-      </Grid>
+          ))}
+        </Box>
+        <Box sx={{ flex: "0 0 calc(33.33% - 16px)" }}>
+          {processorCardsData.map((card, index) => (
+            <Paper
+              key={`processor-${index}`}
+              elevation={3}
+              sx={{
+                borderRadius: "12px",
+                p: 2,
+                mb: 2,
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                {card.title}
+              </Typography>
+              {card.items.map((item, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    py: 0.5,
+                  }}
+                >
+                  <Typography variant="body2">{item.label}</Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    {getStatusIcon(item.status, item.color)}
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                      {item.status}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Paper>
+          ))}
+        </Box>
+        <Box sx={{ flex: "0 0 calc(33.33% - 16px)" }}>
+          {networkCardsData.map((card, index) => (
+            <Paper
+              key={`network-${index}`}
+              elevation={3}
+              sx={{
+                borderRadius: "12px",
+                p: 2,
+                mb: 2,
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                {card.title}
+              </Typography>
+              {card.items.map((item, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    py: 0.5,
+                  }}
+                >
+                  <Typography variant="body2">{item.label}</Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    {getStatusIcon(item.status, item.color)}
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                      {item.status}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Paper>
+          ))}
+        </Box>
+        <Box sx={{ flex: "0 0 calc(33.33% - 16px)" }}>
+          {storageCardsData.map((card, index) => (
+            <Paper
+              key={`storage-${index}`}
+              elevation={3}
+              sx={{
+                borderRadius: "12px",
+                p: 2,
+                mb: 2,
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                {card.title}
+              </Typography>
+              {card.items.map((item, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    py: 0.5,
+                  }}
+                >
+                  <Typography variant="body2">{item.label}</Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    {getStatusIcon(item.status, item.color)}
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                      {item.status}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Paper>
+          ))}
+        </Box>
+        <Box sx={{ flex: "0 0 calc(33.33% - 16px)" }}>
+          {deviceCardsData.map((card, index) => (
+            <Paper
+              key={`device-${index}`}
+              elevation={3}
+              sx={{
+                borderRadius: "12px",
+                p: 2,
+                mb: 2,
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                {card.title}
+              </Typography>
+              {card.items.map((item, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    py: 0.5,
+                  }}
+                >
+                  <Typography variant="body2">{item.label}</Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    {getStatusIcon(item.status, item.color)}
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                      {item.status}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Paper>
+          ))}
+        </Box>
+        <Box sx={{ flex: "0 0 calc(33.33% - 16px)" }}>
+          {memoryCardsData.map((card, index) => (
+            <Paper
+              key={`memory-${index}`}
+              elevation={3}
+              sx={{
+                borderRadius: "12px",
+                p: 2,
+                mb: 2,
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                {card.title}
+              </Typography>
+              {card.items.map((item, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    py: 0.5,
+                  }}
+                >
+                  <Typography variant="body2">{item.label}</Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    {getStatusIcon(item.status, item.color)}
+                    <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                      {item.status}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Paper>
+          ))}
+        </Box>
+      </Box>
     </Box>
   );
 };
 
 export default CardsGrid;
-
