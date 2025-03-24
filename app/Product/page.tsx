@@ -17,7 +17,6 @@ const MainPage = () => {
           <CardsGrid/>
       </Box>
       </Box>
-      
     </Box>
   )
 }
