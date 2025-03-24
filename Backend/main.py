@@ -1,29 +1,33 @@
-from flask import Flask,  request, jsonify
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 import requests
 import redfish
-from tabulate import tabulate
 
-app = Flask(__name__)
+app = FastAPI()
 
-@app.route('/api/login', methods=['POST'])
-def make_req():
-    dat = request.json
-    data= dat['body']
-    url= data['url']
-    username= data['username']
-    password= data['password']
+class User(BaseModel):
+    url: str
+    username: str
+    password: str
 
+
+# Create an item
+@app.post("/login/")
+async def login(data: User):
+    url = data.url
+    username = data.username
+    password = data.password
+    print(data)
     # Create a Redfish client object and connect to the API
     client = redfish.redfish_client(base_url=url, username=username, password=password)
     try:
-        resp = client.login(auth=redfish.AuthMethod.SESSION)
-        print("hey",resp)
+        client.login(auth=redfish.AuthMethod.SESSION)
         # Perform some tasks using the Redfish API
         response = client.get('/redfish')
         if response.status == 200:
-            return jsonify({"message":"Logged in", "success":True})
+            return ({"message":"Logged in", "success":True})
         else:
-            return jsonify({"message": 'Failed to get chassis information', "success":True})
+            return ({"message": 'Failed to get chassis information', "success":True})
     except Exception as e:
          return ({"message":"Failed to Log in", "success":False})
      
@@ -225,9 +229,9 @@ def Summary(data:User):
     url = data.url
     username = data.username
     password = data.password
+    # print(data.username, data.url)
     # Create a Redfish client object and connect to the API
     client = redfish.redfish_client(base_url=url, username=username, password=password)
-    
     # Attempt to login with a timeout of 10 seconds
     try:
         client.login(auth=redfish.AuthMethod.SESSION)

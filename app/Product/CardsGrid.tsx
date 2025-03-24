@@ -1,6 +1,7 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, Paper } from "@mui/material";
+import axios from "axios";
 
 const cardsData = [
     {
@@ -62,6 +63,29 @@ const cardsData = [
 
 
 const CardsGrid: React.FC = () => {
+const [loading, setLoading] = useState(false)
+
+  const fetcher = async () => {
+    const url = "http://10.132.147.210"
+    const user_name = "Administrator";
+    const password = "SZMJKGN6";
+    try {
+      const resp = await axios.post("http://localhost:3000/api/summary",{
+        url:url,
+        username:user_name,
+        password:password
+      });
+      cardsData.push(resp.data.data['Other'][0])
+      setLoading(true)
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetcher();
+  }, []);
+
   return (
     <Box
       sx={{
@@ -83,7 +107,7 @@ const CardsGrid: React.FC = () => {
           paddingX: 2 
         }}
       >
-        {cardsData.map((card, index) => (
+        {loading && cardsData.map((card, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Paper 
               sx={{ 
@@ -101,7 +125,7 @@ const CardsGrid: React.FC = () => {
               <Typography variant="h6" sx={{ mb: 1, fontWeight: "bold" }}>
                 {card.title}
               </Typography>
-              {card.items.map((item, idx) => (
+              {loading && card.items?.map((item, idx) => (
                 <Box 
                   key={idx} 
                   sx={{ 
