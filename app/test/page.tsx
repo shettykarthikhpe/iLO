@@ -2,10 +2,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import StatusCard from "../Product/StatusCards";
-import SummaryCard from "../statusCard";
-import ProcessorCard from "../processorCard";
-import MemoryCard from "../memoryCard";
-import DeviceCard from "../deviceCard";
+import SummaryCard from "../Components/statusCard";
+import ProcessorCard from "../Components/processorCard";
+import MemoryCard from "../Components/memoryCard";
+import DeviceCard from "../Components/deviceCard";
+import NetworkSummaryCard from "../Components/networkCard";
 
 
 const dummy = () =>{
@@ -17,6 +18,8 @@ const dummy = () =>{
     const [sloading, setSLoading] = useState(false)
     const [dloading, setDLoading] = useState(false)
     const [mloading, setMLoading] = useState(false)
+    const [nloading, setNLoading] = useState(false)
+    const [network, setNetwork] = useState();
 
 
   const deviceFetcher =async() =>{
@@ -27,6 +30,18 @@ const dummy = () =>{
       setDLoading(true)
     }catch(err){
       setDLoading(false)
+      console.log(err)
+    }
+  }
+
+  const networkFetcher =async() =>{
+    try{
+      setNLoading(false)
+      const response = await axios.post("/api/network");
+      setNetwork(response.data.data)
+      setNLoading(true)
+    }catch(err){
+      setNLoading(false)
       console.log(err)
     }
   }
@@ -71,6 +86,7 @@ const dummy = () =>{
     deviceFetcher()
     summaryFetcher()
     memoryFetcher()
+    networkFetcher();
   },[])
 
     return(
@@ -79,6 +95,7 @@ const dummy = () =>{
         { mloading && memory && <MemoryCard data={memory} /> }
         { dloading && device && <DeviceCard data={device} />}
         { ploading && processor &&  <ProcessorCard data={processor} /> }
+        {nloading && network && <NetworkSummaryCard />}
         </>
     )
 }
