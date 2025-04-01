@@ -64,8 +64,8 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ data }) => {
       <Paper
         elevation={3}
         sx={{
-          width: 450,
-          height: 280, // Fixed height for compact view
+          width: "100%",
+          minHeight: "100%",
           borderRadius: "12px",
           display: "flex",
           flexDirection: "column",

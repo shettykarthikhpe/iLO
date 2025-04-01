@@ -1,5 +1,3 @@
-
-
 "use client"
 import axios from "axios";
 import { SetStateAction, useEffect, useState } from "react";
@@ -48,35 +46,35 @@ const Product = () => {
     return (
       <>
       <NavBar/>
-        <Box sx={{ mt:12, p: 3 }}>
-            <Grid container spacing={3}>
+        <Box sx={{ mt:12, p: 3, width: "100%", overflowX: "hidden" }}>
+            <Grid container spacing={3} justifyContent="center" alignItems="stretch">
                 {loading.summary && summary && (
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={4} lg={4}>
                         <SummaryCard data={summary} />
                     </Grid>
                 )}
                 {loading.memory && memory && (
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={4} lg={4}>
                         <MemoryCard data={memory} />
                     </Grid>
                 )}
                 {loading.device && device && (
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={4} lg={4}>
                         <DeviceCard data={device} />
                     </Grid>
                 )}
                 {loading.processor && processor && (
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={4} lg={4}>
                         <ProcessorCard data={processor} />
                     </Grid>
                 )}
                 {loading.network && network && (
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={4} lg={4}>
                         <NetworkSummaryCard rawData={network} />
                     </Grid>
                 )}
                 {loading.storage && storage && (
-                    <Grid item xs={12} sm={6} md={4}>
+                    <Grid item xs={12} sm={6} md={4} lg={4}>
                         <StorageSummaryCard data={storage} />
                     </Grid>
                 )}

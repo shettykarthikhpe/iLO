@@ -65,8 +65,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data }) => {
             key={index}
             elevation={3}
             sx={{
-              width: 450,
-              height: 280,
+              width: "100%",
+              minHeight: "100%",
               borderRadius: "12px",
               padding: "20px",
               cursor: extraParts.length > 0 ? "pointer" : "default",

@@ -105,8 +105,8 @@ const NetworkSummaryCard: React.FC<{ rawData?: RawNetworkData }> = ({ rawData })
       <Paper
         elevation={3}
         sx={{
-          width: 450,
-          height: 242,
+          width: "100%",
+          minHeight: "100%",
           borderRadius: "12px",
           display: "flex",
           flexDirection: "column",

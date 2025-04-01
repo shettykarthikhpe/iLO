@@ -28,7 +28,8 @@ const getHealthIcon = (health: string) => {
  
 const StorageSummaryCard: React.FC<StorageData[]> = ({ data }:any) => {
   return (
-    <Paper elevation={3} sx={{ p: 2, borderRadius: "12px", mb: 2 }}>
+    <Paper elevation={3} sx={{ width: "100%",
+      minHeight: "100%", display: "flex", p: 2, borderRadius: "12px", mb: 2 }}>
       <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
         Storage Summary
       </Typography>

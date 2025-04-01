@@ -68,8 +68,8 @@ const ProcessorCard: React.FC<ProcessorCardProps> = ({ data }) => {
       <Paper
         elevation={3}
         sx={{
-          width: 450, 
-          height: 242, 
+          width: "100%",
+          minHeight: "100%", 
           borderRadius: "12px",
           padding: "20px",
           display: "flex",

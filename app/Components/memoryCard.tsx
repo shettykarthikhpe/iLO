@@ -67,8 +67,8 @@ const MemoryCard: React.FC<MemoryCardProps> = ({ data }) => {
  <Paper
  elevation={3}
  sx={{
- width: 450,
- height: 280,
+    width: "100%",
+    minHeight: "100%",
  borderRadius: "12px",
  display: "flex",
  flexDirection: "column",
