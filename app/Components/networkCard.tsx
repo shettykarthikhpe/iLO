@@ -54,30 +54,48 @@ const NetworkSummaryCard: React.FC<{ rawData?: RawNetworkData }> = ({ rawData })
 
   // Transform raw network data into a structured format
   const networkItems: NetworkItem[] = useMemo(() => {
-    if (!rawData) {
-      console.log("No valid raw data found.")
-      return [];
-    };
-    console.log("Raw Data:", rawData);
+    console.log("Raw Network Data:", rawData);
 
-    // Get the minimum valid length to avoid accessing undefined indices
+    // Ensure rawData is an array and extract the first object
+    const data = Array.isArray(rawData) && rawData.length > 0 ? rawData[0] : rawData;
+
+    console.log("Extracted Data:", data);
+
+    if (!data || !data.Model || !data.Location || !data.Firmware || !data.State || !data.Health) {
+        console.log("Invalid extracted data structure.");
+        return [];
+    }
+
     const count = Math.min(
-      rawData.Model?.length || 0,
-      rawData.Location?.length || 0,
-      rawData.Firmware?.length || 0,
-      rawData.Status?.length || 0
+        data.Model.length,
+        data.Location.length,
+        data.Firmware.length,
+        data.State.length,
+        data.Health.length
     );
 
-    return Array.from({ length: count }, (_, i) => ({
-      Model: rawData.Model?.[i] || "Unknown",
-      Location: rawData.Location?.[i] || "Unknown",
-      Firmware: rawData.Firmware?.[i] || "Unknown",
-      State: rawData.Status?.[i]?.State || "Unknown",
-      Health: rawData.Status?.[i]?.HealthRollup || rawData.Status?.[i]?.Health || "Unknown",
-    }));
-  }, [rawData]);
+    console.log("Computed Count:", count);
 
-  console.log("Processed Network Items:", networkItems); // Debugging line
+    if (count === 0) {
+        console.log("All extracted arrays have length 0.");
+        return [];
+    }
+
+    const processedItems = Array.from({ length: count }, (_, i) => ({
+        Model: data.Model[i] || "Unknown",
+        Location: data.Location[i] || "Unknown",
+        Firmware: data.Firmware[i] || "Unknown",
+        State: data.State[i] || "Unknown",
+        Health: data.Health[i] || "Unknown",
+    }));
+
+    console.log("Processed Network Items:", processedItems);
+
+    return processedItems;
+}, [rawData]);
+
+
+   // Debugging line
 
   const compactView = networkItems.slice(0, 3); // Show only the first 3 rows in the main card
 
@@ -88,7 +106,7 @@ const NetworkSummaryCard: React.FC<{ rawData?: RawNetworkData }> = ({ rawData })
         elevation={3}
         sx={{
           width: 450,
-          height: 184,
+          height: 242,
           borderRadius: "12px",
           display: "flex",
           flexDirection: "column",

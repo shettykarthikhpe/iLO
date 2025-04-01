@@ -2,15 +2,15 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import requests
 import redfish
-
+ 
 app = FastAPI()
-
+ 
 class User(BaseModel):
     url: str
     username: str
     password: str
-
-
+ 
+ 
 # Create an item
 @app.post("/login/")
 async def login(data: User):
@@ -37,10 +37,10 @@ def Device(data: User):
     url = data.url
     username = data.username
     password = data.password
-    
+   
     # Create a Redfish client object and connect to the API
     client = redfish.redfish_client(base_url=url, username=username, password=password)
-    
+   
     # Attempt to login with a timeout of 10 seconds
     try:
         client.login(auth=redfish.AuthMethod.SESSION)
@@ -52,7 +52,7 @@ def Device(data: User):
             if not members:
                 print("No data found")
                 return
-            
+           
             table_data = []
             devices =[]
             stat= []
@@ -62,7 +62,7 @@ def Device(data: User):
             cmpIntStatus= []
             locats= []
             pv= []
-            
+           
             for member in members:
                 device_type= member.get('DeviceType', 'N/A')
                 location= member.get('Location', 'N/A')
@@ -70,11 +70,11 @@ def Device(data: User):
                 links= member.get('Links', {})
                 pci= links.get('PCISlot', {})
                 oid= pci.get('@odata.id', 'N/A')
-                
+               
                 ver= member.get('FirmwareVersion',{})
                 cver= ver.get('Current',{})
                 vers= cver.get('VersionString','N/A')
-                
+               
                 cis= member.get("ComponentIntegrityStatus","N/A")
                 prdV= member.get("ProductVersion", "N/A")
                 status= member.get('Status',{})
@@ -95,7 +95,7 @@ def Device(data: User):
             print('Failed to get chassis information')
     except requests.exceptions.Timeout:
         print("Login request timed out after 10 seconds")
-
+ 
 # to fetch memory data
 PhysicalMemory= []
 MemorySummary= []
@@ -106,7 +106,7 @@ def Memory(data: User):
     password = data.password
     # Create a Redfish client object and connect to the API
     client = redfish.redfish_client(base_url=url, username=username, password=password)
-    
+   
     # Attempt to login with a timeout of 10 seconds
     try:
         client.login(auth=redfish.AuthMethod.SESSION)
@@ -134,7 +134,7 @@ def Memory(data: User):
         return ({"PM":PhysicalMemory, "MS":MemorySummary})
     except Exception as e:
         return ("error fetching memory")
-    
+   
 MemberUrl= []
 @app.post("/memory")
 def Memory(data:User):
@@ -143,7 +143,7 @@ def Memory(data:User):
     password = data.password
     # Create a Redfish client object and connect to the API
     client = redfish.redfish_client(base_url=url, username=username, password=password)
-    
+   
     # Attempt to login with a timeout of 10 seconds
     try:
         client.login(auth=redfish.AuthMethod.SESSION)
@@ -158,8 +158,8 @@ def Memory(data:User):
             return ("jhel")
     except Exception as e:
         return ({"error":e})
-    
-
+   
+ 
 Processor= []
 @app.post("/processor")
 def Processort(data: User):
@@ -168,7 +168,7 @@ def Processort(data: User):
     password = data.password
     # Create a Redfish client object and connect to the API
     client = redfish.redfish_client(base_url=url, username=username, password=password)
-    
+   
     # Attempt to login with a timeout of 10 seconds
     try:
         client.login(auth=redfish.AuthMethod.SESSION)
@@ -178,14 +178,14 @@ def Processort(data: User):
             Cache= []
             for cache in response.dict["Oem"]["Hpe"]["Cache"]:
                 Cache.append([cache["Location"], cache["Name"], cache["InstalledSizeKB"]])
-            
-        Processor.append({"Name":response.dict["Model"], "Status":response.dict["Status"], "Speed":response.dict["Oem"]["Hpe"]["RatedSpeedMHz"], "Core":response.dict["Oem"]["Hpe"]["Characteristics"][1], 
+           
+        Processor.append({"Name":response.dict["Model"], "Status":response.dict["Status"], "Speed":response.dict["Oem"]["Hpe"]["RatedSpeedMHz"], "Core":response.dict["Oem"]["Hpe"]["Characteristics"][1],
                           "TotalCore": response.dict["TotalCores"], "TotalThreads":response.dict["TotalThreads"],"Cache":Cache})
         return(Processor)
     except Exception as e:
         return ({"error": e})
-    
-
+   
+ 
 # Network
 @app.post('/network')
 def test(data:User):
@@ -194,7 +194,7 @@ def test(data:User):
     password = data.password
     # Create a Redfish client object and connect to the API
     client = redfish.redfish_client(base_url=url, username=username, password=password)
-    
+   
     # Attempt to login with a timeout of 10 seconds
     try:
         client.login(auth=redfish.AuthMethod.SESSION)
@@ -248,7 +248,7 @@ def test(data:User):
     except Exception as e:
         return ({"error":e})
    
-# Summary         
+# Summary        
 Other= []            
 @app.post('/summary')
 def Summary(data:User):
@@ -270,8 +270,8 @@ def Summary(data:User):
             return ([{"Name":response.dict["Name"], "Model":response.dict["Model"], "Other":Other}])
     except Exception as e:
         return ({"error": e})
-    
-
+   
+ 
  
 Memo= []
 Controllers= []
@@ -327,7 +327,7 @@ def test(data:User):
             for item in Memo:
                 respons= client.get(item)
                 Controllers.append({"Model":respons.dict["Model"], "Status":respons.dict["Status"]})  
-            ControllerCount.append(len(Controllers))     
+            ControllerCount.append(len(Controllers))    
             # return (ControllerCount)
             # for murl in response.dict["Members"]:
             #     resp = client.get(murl["@odata.id"])

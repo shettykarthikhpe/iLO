@@ -69,12 +69,11 @@ const ProcessorCard: React.FC<ProcessorCardProps> = ({ data }) => {
         elevation={3}
         sx={{
           width: 450, 
-          height: 184, 
+          height: 242, 
           borderRadius: "12px",
           padding: "20px",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
           cursor: "pointer",
         }}
         onClick={() => setOpen(true)} 
