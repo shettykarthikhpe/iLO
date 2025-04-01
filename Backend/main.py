@@ -186,7 +186,8 @@ def Processort(data: User):
         return ({"error": e})
     
 
-@app.post('/test')
+# Network
+@app.post('/network')
 def test(data:User):
     url = data.url
     username = data.username
@@ -204,7 +205,8 @@ def test(data:User):
         FirmwareVersion= []
         Ports= []
         Model= []
-        Status= []
+        State= []
+        Health= []
         if response.status == 200:
             for member in response.dict["Members"]:
                 resp= client.get(member["@odata.id"])
@@ -219,9 +221,18 @@ def test(data:User):
                 else:
                     FirmwareVersion.append("N/A")
                 if "Status" in resp.dict:
-                    Status.append(resp.dict['Status'])
-                else:
-                    Status.append("N/A")
+                    if "HealthRollup" in resp.dict["Status"]:
+                        Health.append(resp.dict['Status']["HealthRollup"])
+                    elif "Health" in resp.dict["Status"]:
+                        Health.append(resp.dict['Status']["Health"])
+                    else:
+                        Health.append("N/A")
+                    # Status.append(resp.dict['Status'])
+                if "Status" in resp.dict:
+                    if "State" in resp.dict["Status"]:
+                        State.append(resp.dict['Status']["State"])
+                    else:
+                        State.append("N/A")
                 links= []
                 # for member in resp.dict["Controllers"][0]["Links"]["Ports"]["@odata.id"]:
                 links.append(resp.dict["Controllers"][0]["Links"]["Ports"])
@@ -233,7 +244,7 @@ def test(data:User):
                 # print(resp.dict["Oem"]["Hpe"]["PhysicalPorts"])
                 # print(resp.dict["Controllers"]["FirmwarePackageVersion"])
                 # print(resp.dict["Controllers"]["Ports"])
-        return ([{"Model":Model, "Location":Location, "Firmware":FirmwareVersion, "Status":Status}])
+        return ([{"Model":Model, "Location":Location, "Firmware":FirmwareVersion, "State":State, "Health":Health}])
     except Exception as e:
         return ({"error":e})
    
@@ -265,62 +276,69 @@ def Summary(data:User):
 Memo= []
 Controllers= []
 Drives= []
-# @app.post("/test")
-# def test(data:User):
-#     url = data.url
-#     username = data.username
-#     password = data.password
-#     # Create a Redfish client object and connect to the API
-#     client = redfish.redfish_client(base_url=url, username=username, password=password)
-#     # Attempt to login with a timeout of 10 seconds
-#     try:
-#         client.login(auth=redfish.AuthMethod.SESSION)
-#         respo= []
-#         # Perform some tasks using the Redfish API
-#         response = client.get('/redfish/v1/Systems/1/Storage/')
-#         if response.status == 200:
-#             location= []
-#             media= []
-#             mediaType= []
-#             capacity= []
-#             for murl in response.dict["Members"]:
-#                 resp = client.get(murl["@odata.id"])
-#                 for mul in resp.dict["Drives"]:
-#                     re= client.get(mul["@odata.id"])
-#                     return (re.dict)
-#                     location.append(re.dict["PhysicalLocation"]["PartLocation"])
-#                     if "PredictedMediaLifeLeftPercent" in re.dict:
-#                         media.append(re.dict["PredictedMediaLifeLeftPercent"])
-#                     else:
-#                         media.append("N/A")
-#                     if "MediaType" in re.dict:
-#                         mediaType.append(re.dict["MediaType"])
-#                     else:
-#                         mediaType.append("N/A")
-#                     if "CapacityBytes" in re.dict:
-#                         capacity.append(re.dict["CapacityBytes"])
-#                     else:
-#                         capacity.append("N/A")
-#             Drives.append([{"Location":location, "MediaLife":media, "MediaType":mediaType, "CapacityBytes":capacity}])
-#             for murl in response.dict["Members"]:
-#                 resp = client.get(murl["@odata.id"])
-#                 controllers= resp.dict["Controllers"]
-#                 respo.append(controllers)
-#             for item in respo:
-#                 re= client.get(item["@odata.id"])
-#                 Memo.append(re.dict["Members"][0]["@odata.id"])
-#             for item in Memo:
-#                 respons= client.get(item)
-#                 Controllers.append([{"Model":respons.dict["Model"], "Status":respons.dict["Status"]}])
-#             return (Drives)
-            
-#             # for murl in response.dict["Members"]:
-#             #     resp = client.get(murl["@odata.id"])
-#             #     links= []
-#             #     for mul in resp.dict["Links"]["Enclosures"]:
-#             #         links.append(mul)
-#             #     for item in links:
-#             #         resps= client.get(item["@odata.id"])
-#             #         return(resps.dict)
-#     except Exception as e:
-#         return ({"error": e})
+DrivesCount= []
+Enclosure= []
+ControllerCount= []
+@app.post("/test")
+def test(data:User):
+    url = data.url
+    username = data.username
+    password = data.password
+    # Create a Redfish client object and connect to the API
+    client = redfish.redfish_client(base_url=url, username=username, password=password)
+    # Attempt to login with a timeout of 10 seconds
+    try:
+        client.login(auth=redfish.AuthMethod.SESSION)
+        respo= []
+        # Perform some tasks using the Redfish API
+        response = client.get('/redfish/v1/Systems/1/Storage/')
+        if response.status == 200:
+            location= []
+            media= []
+            mediaType= []
+            capacity= []
+            for murl in response.dict["Members"]:
+                resp = client.get(murl["@odata.id"])
+                for mul in resp.dict["Drives"]:
+                    re= client.get(mul["@odata.id"])
+                    location.append(re.dict["PhysicalLocation"]["PartLocation"])
+                    # if "PredictedMediaLifeLeftPercent" in re.dict:
+                    #     media.append(re.dict["PredictedMediaLifeLeftPercent"])
+                    # else:
+                    #     media.append("N/A")
+                    # if "MediaType" in re.dict:
+                    #     mediaType.append(re.dict["MediaType"])
+                    # else:
+                    #     mediaType.append("N/A")
+                    # if "CapacityBytes" in re.dict:
+                    #     capacity.append(re.dict["CapacityBytes"])
+                    # else:
+                    #     capacity.append("N/A")
+                Drives.append({"Location":location, "MediaLife":media, "MediaType":mediaType, "CapacityBytes":capacity})
+                # DrivesCount.append({"DriveCount":len(Drives[0]["Location"]), "Status":re.dict['Oem']['Hpe']['DriveStatus']})
+            DrivesCount.append(len(Drives[0]["Location"]))
+            for murl in response.dict["Members"]:
+                resp = client.get(murl["@odata.id"])
+                controllers= resp.dict["Controllers"]
+                respo.append(controllers)
+            for item in respo:
+                re= client.get(item["@odata.id"])
+                Memo.append(re.dict["Members"][0]["@odata.id"])
+            for item in Memo:
+                respons= client.get(item)
+                Controllers.append({"Model":respons.dict["Model"], "Status":respons.dict["Status"]})  
+            ControllerCount.append(len(Controllers))     
+            # return (ControllerCount)
+            # for murl in response.dict["Members"]:
+            #     resp = client.get(murl["@odata.id"])
+            #     # return(resp.dict)
+            #     links= []
+            #     for mul in resp.dict["Links"]["Enclosures"]:
+            #         links.append(mul)
+            #     for item in links:
+            #         resps= client.get(item["@odata.id"])
+            #         Enclosure.append([resps.dict])
+            #     return (Enclosure)
+        return ([{"entity":"Storage Controller", "count":ControllerCount, "health":"OK"}, {"entity":"Drives","count":DrivesCount, "health":"OK"}])
+    except Exception as e:
+        return ({"error": e})
