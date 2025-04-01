@@ -3,26 +3,20 @@ import { Box, Typography, Paper, Table, TableBody, TableCell, TableContainer, Ta
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import InfoIcon from "@mui/icons-material/Info";
-
+ 
 // Define the structure of storage data
 interface StorageData {
   entity: string;
   count: number;
   health: string;
 }
-
-const storageData: StorageData[] = [
-  { entity: "Storage Controllers", count: 1, health: "Critical" },
-  { entity: "Volumes", count: 0, health: "Not available" },
-  { entity: "Storage Enclosures", count: 1, health: "OK" },
-  { entity: "Drives", count: 8, health: "Critical" },
-];
-
+ 
+ 
 // Utility function to return an icon based on health status
 const getHealthIcon = (health: string) => {
   switch (health.toLowerCase()) {
     case "ok":
-      return <CheckCircleIcon sx={{ color: "green", fontSize: 18 }} />;
+      return <CheckCircleIcon sx={{ color: "#17eba0", fontSize: 18 }} />;
     case "critical":
       return <ErrorIcon sx={{ color: "red", fontSize: 18 }} />;
     case "not available":
@@ -31,8 +25,8 @@ const getHealthIcon = (health: string) => {
       return null;
   }
 };
-
-const StorageSummaryCard: React.FC = () => {
+ 
+const StorageSummaryCard: React.FC<StorageData[]> = ({ data }:any) => {
   return (
     <Paper elevation={3} sx={{ p: 2, borderRadius: "12px", mb: 2 }}>
       <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
@@ -48,7 +42,7 @@ const StorageSummaryCard: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {storageData.map((item, idx) => (
+            {data.map((item:any, idx:any) => (
               <TableRow
                 key={idx}
                 sx={{ backgroundColor: item.entity === "Storage Controllers" ? "" : "inherit" }}
@@ -67,5 +61,5 @@ const StorageSummaryCard: React.FC = () => {
     </Paper>
   );
 };
-
+ 
 export default StorageSummaryCard;

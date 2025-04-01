@@ -1,5 +1,17 @@
-import React from "react";
-import { Box, Typography, Paper } from "@mui/material";
+
+
+
+import React, { useState } from "react";
+import { 
+  Box, 
+  Typography, 
+  Paper, 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions, 
+  Button 
+} from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorIcon from "@mui/icons-material/Error";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -26,11 +38,11 @@ interface ProcessorCardProps {
 
 // Utility function to return an icon based on a status string.
 const getStatusIcon = (status: string) => {
-  switch (status.toLowerCase()) {
+  switch (status?.toLowerCase()) {
     case "ok":
     case "on":
     case "enabled":
-      return <CheckCircleIcon sx={{ color: "green", fontSize: 18 }} />;
+      return <CheckCircleIcon sx={{ color: "#17eba0", fontSize: 18 }} />;
     case "warning":
       return <WarningAmberIcon sx={{ color: "orange", fontSize: 18 }} />;
     case "critical":
@@ -42,82 +54,116 @@ const getStatusIcon = (status: string) => {
 };
 
 const ProcessorCard: React.FC<ProcessorCardProps> = ({ data }) => {
+  const [open, setOpen] = useState(false);
+
+  // Limit to 2 processors (Prevent duplicates)
+  const processors = data.slice(0, 2);
+
+  // Debugging logs
+  console.log("Processor Data:", processors);
+
   return (
     <>
-      {data && [data[0]].map((proc, index) => (
-        <Paper
-          key={index}
-          sx={{
-            p: 2,
-            borderRadius: "12px",
-            mb: 2,
-            display: "flex",
-            flexDirection: "column",
-            gap: 1,
-          }}
-          elevation={3}
-        >
-          {/* Card Title */}
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
-            {proc.Name}
-          </Typography>
-          {/* Status Information */}
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-            <Typography variant="body2">Health:</Typography>
+      {/* Main Compact Card */}
+      <Paper
+        elevation={3}
+        sx={{
+          width: 450, 
+          height: 184, 
+          borderRadius: "12px",
+          padding: "20px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          cursor: "pointer",
+        }}
+        onClick={() => setOpen(true)} 
+      >
+        <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+          Processors
+        </Typography>
+
+        {processors.map((proc, index) => (
+          <Box key={index} sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+            <Typography variant="body2">{proc.Name}</Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              {getStatusIcon(proc.Status.Health)}
+              {getStatusIcon(proc.Status?.Health)}
               <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                {proc.Status.Health}
+                {proc.Status?.Health}
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-            <Typography variant="body2">State:</Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              {getStatusIcon(proc.Status.State)}
-              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                {proc.Status.State}
+        ))}
+      </Paper>
+
+      {/* Dialog Box for Full Details */}
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Processor Details</DialogTitle>
+        <DialogContent dividers>
+          {processors.map((proc, index) => (
+            <Box key={index} sx={{ mb: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                {proc.Name}
               </Typography>
-            </Box>
-          </Box>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-            <Typography variant="body2">Speed:</Typography>
-            <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-              {proc.Speed} MHz
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-            <Typography variant="body2">Cores:</Typography>
-            <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-              {proc.TotalCore}
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-            <Typography variant="body2">Threads:</Typography>
-            <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-              {proc.TotalThreads}
-            </Typography>
-          </Box>
-          {/* Cache Information */}
-          {proc.Cache.map((cacheEntry, idx) => (
-            <Box
-              key={idx}
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                mb: 0.5,
-              }}
-            >
-              <Typography variant="body2">{cacheEntry[1]}:</Typography>
-              <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                {cacheEntry[2]} KB
-              </Typography>
+              
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                <Typography variant="body2">Health:</Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  {getStatusIcon(proc.Status?.Health)}
+                  <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                    {proc.Status?.Health}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                <Typography variant="body2">State:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  {proc.Status?.State}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                <Typography variant="body2">Speed:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  {proc.Speed} MHz
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                <Typography variant="body2">Cores:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  {proc.TotalCore}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
+                <Typography variant="body2">Threads:</Typography>
+                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                  {proc.TotalThreads}
+                </Typography>
+              </Box>
+
+              {/* Cache Information */}
+              {proc.Cache.map((cacheEntry, idx) => (
+                <Box key={idx} sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
+                  <Typography variant="body2">{cacheEntry[1]}:</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                    {cacheEntry[2]} KB
+                  </Typography>
+                </Box>
+              ))}
             </Box>
           ))}
-        </Paper>
-      ))}
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
 
 export default ProcessorCard;
+

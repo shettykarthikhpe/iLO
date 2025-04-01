@@ -1,128 +1,89 @@
-// "use client";
-// import {useState} from "react";
-// import { Box, CssBaseline, Typography} from "@mui/material";
-// import NavBar from "./Navbar";
-// import CardsGrid from "./CardsGrid";
 
-// const MainPage = () => {
-//   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
-
-//   return (
-//     <Box sx={{ display: "flex" }}>
-//       <CssBaseline/>
-      
-//       <Box sx = {{flexGrow: 1, ml: isSideBarOpen ? 25 : 0, transition: "margin 0.3s ease-in-out", width: "100%"}}>
-//         <NavBar />
-//         <Box sx = {{ pr: 25}}> 
-//           <CardsGrid/>
-//       </Box>
-//       </Box>
-//     </Box>
-//   )
-// }
-
-// export default MainPage;
 
 "use client"
 import axios from "axios";
-import { useEffect, useState } from "react";
-import StatusCard from "../Product/StatusCards";
+import { SetStateAction, useEffect, useState } from "react";
+import { Grid, Box } from "@mui/material";
 import SummaryCard from "../Components/statusCard";
 import ProcessorCard from "../Components/processorCard";
 import MemoryCard from "../Components/memoryCard";
 import DeviceCard from "../Components/deviceCard";
 import NetworkSummaryCard from "../Components/networkCard";
+import StorageSummaryCard from "../Components/storageCard";
+import NavBar from "./Navbar";
 
-
-const Product = () =>{
+const Product = () => {
     const [processor, setProcessor] = useState();
     const [summary, setSummary] = useState([]);
     const [device, setDevice] = useState();
     const [memory, setMemory] = useState();
-    const [ploading, setPLoading] = useState(false)
-    const [sloading, setSLoading] = useState(false)
-    const [dloading, setDLoading] = useState(false)
-    const [mloading, setMLoading] = useState(false)
-    const [nloading, setNLoading] = useState(false)
+    const [storage, setStorage] = useState();
     const [network, setNetwork] = useState();
+    const [loading, setLoading] = useState({
+        summary: false, processor: false, memory: false,
+        device: false, storage: false, network: false
+    });
 
+    const fetchData = async (endpoint: string, setter: { (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<never[]>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (arg0: any): void; }, key: string) => {
+        try {
+            setLoading(prev => ({ ...prev, [key]: false }));
+            const response = await axios.post(`/api/${endpoint}`);
+            setter(response.data.data);
+            setLoading(prev => ({ ...prev, [key]: true }));
+        } catch (err) {
+            setLoading(prev => ({ ...prev, [key]: false }));
+            console.error(err);
+        }
+    };
 
-  const deviceFetcher =async() =>{
-    try{
-      setDLoading(false)
-      const response = await axios.post("/api/device");
-      setDevice(response.data.data)
-      setDLoading(true)
-    }catch(err){
-      setDLoading(false)
-      console.log(err)
-    }
-  }
+    useEffect(() => {
+        fetchData("processor", setProcessor, "processor");
+        fetchData("device", setDevice, "device");
+        fetchData("summary", setSummary, "summary");
+        fetchData("memory", setMemory, "memory");
+        fetchData("network", setNetwork, "network");
+        fetchData("storage", setStorage, "storage");
+    }, []);
 
-  const networkFetcher =async() =>{
-    try{
-      setNLoading(false)
-      const response = await axios.post("/api/network");
-      setNetwork(response.data.data)
-      setNLoading(true)
-    }catch(err){
-      setNLoading(false)
-      console.log(err)
-    }
-  }
-
-  const memoryFetcher =async() =>{
-    try{
-      setMLoading(false)
-      const response = await axios.post("/api/memory");
-      setMemory(response.data.data)
-      setMLoading(true)
-    }catch(err){
-      setMLoading(false)
-      console.log(err)
-    }
-  }
-
-  const processorFetcher =async() =>{
-    try{
-      setPLoading(false)
-      const response = await axios.post("/api/processor");
-      setProcessor(response.data.data)
-      setPLoading(true)
-    }catch(err){
-      setPLoading(false)
-      console.log(err)
-    }
-  }
-
-  const summaryFetcher =async() =>{
-    try{
-      setSLoading(false)
-      const response = await axios.post("/api/summary");
-      setSummary(response.data.data)
-      setSLoading(true)
-    }catch(err){
-      setSLoading(false)
-      console.log(err)
-    }
-  }
-  useEffect(()=>{
-    processorFetcher()
-    deviceFetcher()
-    summaryFetcher()
-    memoryFetcher()
-    networkFetcher();
-  },[])
-
-    return(
-        <>
-        { sloading && summary && <SummaryCard data={summary} /> }
-        { mloading && memory && <MemoryCard data={memory} /> }
-        { dloading && device && <DeviceCard data={device} />}
-        { ploading && processor &&  <ProcessorCard data={processor} /> }
-        {nloading && network && <NetworkSummaryCard />}
-        </>
-    )
-}
+    return (
+      <>
+      <NavBar/>
+        <Box sx={{ mt:12, p: 3 }}>
+            <Grid container spacing={3}>
+                {loading.summary && summary && (
+                    <Grid item xs={12} sm={6} md={4}>
+                        <SummaryCard data={summary} />
+                    </Grid>
+                )}
+                {loading.memory && memory && (
+                    <Grid item xs={12} sm={6} md={4}>
+                        <MemoryCard data={memory} />
+                    </Grid>
+                )}
+                {loading.device && device && (
+                    <Grid item xs={12} sm={6} md={4}>
+                        <DeviceCard data={device} />
+                    </Grid>
+                )}
+                {loading.processor && processor && (
+                    <Grid item xs={12} sm={6} md={4}>
+                        <ProcessorCard data={processor} />
+                    </Grid>
+                )}
+                {loading.network && network && (
+                    <Grid item xs={12} sm={6} md={4}>
+                        <NetworkSummaryCard data={network} />
+                    </Grid>
+                )}
+                {loading.storage && storage && (
+                    <Grid item xs={12} sm={6} md={4}>
+                        <StorageSummaryCard data={storage} />
+                    </Grid>
+                )}
+            </Grid>
+        </Box>
+      </>
+    );
+};
 
 export default Product;
