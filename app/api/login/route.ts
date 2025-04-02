@@ -1,19 +1,25 @@
+import axios from "axios";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 
-export async function GET(req: NextRequest) {
-  if(req.method !== "GET"){
+export async function POST(req: NextRequest) {
+  if(req.method !== "POST"){
     return NextResponse.json({ success: false, message: "Not allowed" });
   }
 
   try {
-    const url = "http://127.0.0.1:5000/api/table"
-    const user_name = "Administrator";
-    const password = "GXJYN722";
+    const body = await req.json();
+    const url = body.body.url;
+    const user_name = body.body.username;
+    const password = body.body.password;
 
-    const response = await fetch(url, { method:'GET' });
+    const resp = await axios.post("http://127.0.0.1:8000/login",{
+        url: url,
+        username: user_name,
+        password: password
+      });
 
-    return NextResponse.json({ success: true, response });
+    return NextResponse.json({ success: true, data: resp.data});
   } catch (error: any) {
     console.error("Error", error.message);
     return NextResponse.json(

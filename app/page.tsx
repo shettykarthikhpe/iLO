@@ -44,17 +44,14 @@ export default function Home() {
 
   const handleLogin = async() =>{
     try{
-      const response = await axios.post("http://127.0.0.1:5000/api/login",{
-        headers:{
-          'Content-Type':"application/json"
-        },
+      const response = await axios.post("/api/login",{
         body: {
           url:ip,
           username:username,
           password:password
         }
       })
-      if(response.data.success){
+      if(response.data.data.success){
         setTimeout(() => {
           setIsLoading(false)
           setFormSubmitted(true)
@@ -72,7 +69,6 @@ export default function Home() {
         setIsLoading(false)
         setFormSubmitted(false)
       }
-      
     }catch(err){
       console.log(err)
     }
