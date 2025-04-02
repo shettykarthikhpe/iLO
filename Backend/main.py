@@ -30,7 +30,7 @@ async def login(data: User):
             return ({"message": 'Failed to get chassis information', "success":True})
     except Exception as e:
          return ({"message":"Failed to Log in", "success":False})
-     
+   
 # endpoint for getting device inventory
 @app.post("/device")
 def Device(data: User):
@@ -342,3 +342,39 @@ def test(data:User):
         return ([{"entity":"Storage Controller", "count":ControllerCount, "health":"OK"}, {"entity":"Drives","count":DrivesCount, "health":"OK"}])
     except Exception as e:
         return ({"error": e})
+
+
+@app.post("/logout/")
+async def logout(data: User):
+    url = data.url
+    username = data.username
+    password = data.password
+    
+    # Create a Redfish client object and connect to the API
+    client = redfish.redfish_client(base_url=url, username=username, password=password)
+    try:
+        client.login(auth=redfish.AuthMethod.SESSION)
+        # Logout of the API
+        client.logout()
+        return ({"message":"Logged out", "success":True})
+    except Exception as e:
+         return ({"message":"Failed to Logout", "success":False})
+
+@app.post("/health")
+async def Health(data: User):
+    url = data.url
+    username = data.username
+    password = data.password
+    # Create a Redfish client object and connect to the API
+    client = redfish.redfish_client(base_url=url, username=username, password=password)
+    try:
+        client.login(auth=redfish.AuthMethod.SESSION)
+        # Perform some tasks using the Redfish API
+        response = client.get('/redfish/v1/Systems/1')
+        if response.status == 200:
+            return ([response.dict["Status"]])
+        else:
+            return ({"message": 'Failed to get health information', "success":True})
+    except Exception as e:
+         return ({"message":"Failed to get health information", "success":False})
+ 
