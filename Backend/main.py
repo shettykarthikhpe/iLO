@@ -279,8 +279,8 @@ Drives= []
 DrivesCount= []
 Enclosure= []
 ControllerCount= []
-@app.post("/test")
-def test(data:User):
+@app.post("/storage")
+def Storage(data:User):
     url = data.url
     username = data.username
     password = data.password
@@ -327,7 +327,8 @@ def test(data:User):
             for item in Memo:
                 respons= client.get(item)
                 Controllers.append({"Model":respons.dict["Model"], "Status":respons.dict["Status"]})  
-            ControllerCount.append(len(Controllers))    
+            ControllerCount.append(len(Controllers))
+   
             # return (ControllerCount)
             # for murl in response.dict["Members"]:
             #     resp = client.get(murl["@odata.id"])
@@ -339,6 +340,7 @@ def test(data:User):
             #         resps= client.get(item["@odata.id"])
             #         Enclosure.append([resps.dict])
             #     return (Enclosure)
+            print(ControllerCount)
         return ([{"entity":"Storage Controller", "count":ControllerCount, "health":"OK"}, {"entity":"Drives","count":DrivesCount, "health":"OK"}])
     except Exception as e:
         return ({"error": e})
@@ -378,3 +380,25 @@ async def Health(data: User):
     except Exception as e:
          return ({"message":"Failed to get health information", "success":False})
  
+
+@app.post("/test")
+async def Test(data: User):
+    url = data.url
+    username = data.username
+    password = data.password
+    # Create a Redfish client object and connect to the API
+    client = redfish.redfish_client(base_url=url, username=username, password=password)
+    try:
+        client.login(auth=redfish.AuthMethod.SESSION)
+        # Perform some tasks using the Redfish API
+        response = client.get('/redfish/v1/Systems/1/Storage/')
+        if response.status == 200:
+            for murl in response.dict["Members"]:
+                resp = client.get(murl["@odata.id"])
+                for mul in resp.dict["Drives"]:
+                    re= client.get(mul["@odata.id"])
+                    print(re.dict['SerialNumber'])
+        else:
+            return ({"message": 'Failed to get health information', "success":True})
+    except Exception as e:
+         return ({"message":"Failed to get health information", "success":False})
