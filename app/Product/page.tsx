@@ -26,7 +26,7 @@ const Product = () => {
     const [password, setPassword] = useState()
 
 
-    const fetchData = async (endpoint: string, data:any, setter: { (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<never[]>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (arg0: any): void; }, key: string) => {
+    const fetchData = async (endpoint: string, data:{username:string, ip:string, password:string}, setter: { (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<never[]>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (arg0: any): void; }, key: string) => {
         try {
             setLoading(prev => ({ ...prev, [key]: false }));
             const response = await axios.post(`/api/${endpoint}`,{body:data});
@@ -57,17 +57,17 @@ const Product = () => {
     },[])
 
     useEffect(() => {
-        fetchData("processor", setProcessor, "processor");
-        fetchData("device", setDevice, "device");
-        fetchData("summary", setSummary, "summary");
-        fetchData("memory", setMemory, "memory");
-        fetchData("network", setNetwork, "network");
-        fetchData("storage", setStorage, "storage");
-    }, []);
+        fetchData("processor", {username, ip, password} ,setProcessor, "processor");
+        fetchData("device", {username, ip, password}, setDevice, "device");
+        fetchData("summary",{username, ip, password}, setSummary, "summary");
+        fetchData("memory", {username, ip, password}, setMemory, "memory");
+        fetchData("network",{username, ip, password},  setNetwork, "network");
+        fetchData("storage",{username, ip, password},  setStorage, "storage");
+    }, [username, ip, password]);
 
     return (
       <>
-      {/* <NavBar/>
+      <NavBar/>
         <Box sx={{ mt:12, p: 3, width: "100%", overflowX: "hidden" }}>
             <Grid container spacing={3} justifyContent="center" alignItems="stretch">
                 {loading.summary && summary && (
@@ -101,8 +101,7 @@ const Product = () => {
                     </Grid>
                 )}
             </Grid>
-        </Box> */}
-        <h1>hello</h1>
+        </Box>
       </>
     );
 };

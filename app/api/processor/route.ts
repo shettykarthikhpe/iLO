@@ -8,9 +8,10 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const url = "10.132.147.215"
-    const user_name = "Administrator";
-    const password = "GXJYN722";
+    const body = await req.json();
+    const url = body.body.ip;
+    const user_name = body.body.username;
+    const password = body.body.password;
 
     const resp = await axios.post("http://127.0.0.1:8000/processor",{
         url:url,
