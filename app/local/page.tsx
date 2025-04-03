@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, DragEvent, ChangeEvent } from "react";
-import axios from "axios";
 
 export default function Home() {
-  const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<string>("");
   const [filePath, setFilePath] = useState<string>("");
 
@@ -15,14 +13,12 @@ export default function Home() {
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (e.dataTransfer.files.length > 0) {
-      setFile(e.dataTransfer.files[0]);
       uploadFile(e.dataTransfer.files[0]);
     }
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
       uploadFile(e.target.files[0]);
     }
   };
@@ -32,18 +28,20 @@ export default function Home() {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/upload",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      setStatus(response.data.message);
-      setFilePath(response.data.path);
+      const data = await response.json();
+      if (response.ok) {
+        setStatus("File uploaded successfully!");
+        setFilePath(data.path);
+      } else {
+        setStatus("Upload failed.");
+      }
     } catch (error) {
-      setStatus("Upload failed.");
+      setStatus("Upload error.");
     }
   };
 
@@ -54,7 +52,7 @@ export default function Home() {
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
-        Drag & Drop your .csv or .xlsx file here
+        Drag & Drop your file here
       </div>
 
       <input
@@ -78,7 +76,7 @@ export default function Home() {
   );
 }
 
-// Inline styles
+// Styles
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
