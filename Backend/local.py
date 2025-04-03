@@ -47,6 +47,7 @@ def file_converter(file_name):
 	else:
 		print("proper csv")
 
+# function to geth the drive list
 Drives= []
 def DriveGetter():
     url = "10.132.147.215"
@@ -74,11 +75,17 @@ def DriveGetter():
 filename = "../csv/ilo.csv"
 df = pd.read_csv(filename, encoding="ISO-8859-1")
 
-# ActualDrives= DriveGetter()
+ActualDrives= DriveGetter()
 
-for rows in df:
-    if rows == 'Type':
-        print(df['Type'])
+drive_str_no = df[df['Type'].str.lower()=='drive' ]['SR no']
+print(len(drive_str_no))
+
+matched = drive_str_no[drive_str_no.isin(ActualDrives)]
+print(matched)
+
+# for rows in df:
+#     if rows == 'Type':
+#         print(df['Type'])
         # for item in df[rows]:
         #     if item == 'Drive':
         # 					print(item)
