@@ -2,7 +2,10 @@ from fastapi import FastAPI, HTTPException, File, UploadFile
 from pydantic import BaseModel
 import requests
 import redfish
- 
+import openpyxl
+import os
+import csv
+
 app = FastAPI()
  
 class User(BaseModel):
@@ -403,7 +406,28 @@ async def Test(data: User):
     except Exception as e:
          return ({"message":"Failed to get health information", "success":False})
 
+class File(BaseModel):
+    filename:str
+
+def file_converter(file_name):
+	file_extension = os.path.splitext(file_name)[1]
+	file_original_name = os.path.splitext(file_name)[0]
+	if(file_extension == '.xlsx'):
+		# Load the Excel file
+		wb = openpyxl.load_workbook(f'../uploads/{file_original_name}.xlsx')
+		sheet = wb.active
+
+		# Open a CSV file to write
+		with open(f'../uploads/{file_original_name}.csv', 'w', newline="") as f:
+			c = csv.writer(f)
+
+			# Write the rows from the Excel sheet to the CSV file
+			for row in sheet.iter_rows(values_only=True):
+				c.writerow(row)
+	else:
+		print("proper csv")
 
 @app.post("/upload")
-def _file_upload(my_file: UploadFile = File(...)):
-    print(my_file)
+def converter(data:File):
+    file_name = data.filename
+    file_converter(file_name)

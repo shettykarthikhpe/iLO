@@ -29,23 +29,6 @@ import openpyxl
 import csv
 import os
 
-def file_converter(file_name):
-	file_extension = os.path.splitext(file_name)[1]
-	file_original_name = os.path.splitext(file_name)[0]
-	if(file_extension == '.xlsx'):
-		# Load the Excel file
-		wb = openpyxl.load_workbook(f'../csv/{file_original_name}.xlsx')
-		sheet = wb.active
-
-		# Open a CSV file to write
-		with open(f'../csv/{file_original_name}.csv', 'w', newline="") as f:
-			c = csv.writer(f)
-
-			# Write the rows from the Excel sheet to the CSV file
-			for row in sheet.iter_rows(values_only=True):
-				c.writerow(row)
-	else:
-		print("proper csv")
 
 # function to geth the drive list
 Drives= []
@@ -78,7 +61,6 @@ df = pd.read_csv(filename, encoding="ISO-8859-1")
 ActualDrives= DriveGetter()
 
 drive_str_no = df[df['Type'].str.lower()=='drive' ]['SR no']
-print(len(drive_str_no))
 
 matched = drive_str_no[drive_str_no.isin(ActualDrives)]
 print(matched)
