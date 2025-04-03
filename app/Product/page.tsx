@@ -21,11 +21,15 @@ const Product = () => {
         summary: false, processor: false, memory: false,
         device: false, storage: false, network: false
     });
+    const [ip, setIp] = useState()
+    const [username, setUserName] = useState()
+    const [password, setPassword] = useState()
 
-    const fetchData = async (endpoint: string, setter: { (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<never[]>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (arg0: any): void; }, key: string) => {
+
+    const fetchData = async (endpoint: string, data:any, setter: { (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<never[]>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (value: SetStateAction<undefined>): void; (arg0: any): void; }, key: string) => {
         try {
             setLoading(prev => ({ ...prev, [key]: false }));
-            const response = await axios.post(`/api/${endpoint}`);
+            const response = await axios.post(`/api/${endpoint}`,{body:data});
             setter(response.data.data);
             setLoading(prev => ({ ...prev, [key]: true }));
         } catch (err) {
@@ -33,6 +37,24 @@ const Product = () => {
             console.error(err);
         }
     };
+
+    const UserGetter = async ()=>{
+        const token = localStorage.getItem("token") || ""
+        try{
+            const response = await axios.post("/api/getUser",{
+                token:token
+            })
+            setIp(response.data.data.ip)
+            setUserName(response.data.data.username)
+            setPassword(response.data.data.password)
+        }catch(e){
+            console.log(e)
+        }
+    }
+
+    useEffect(()=>{
+        UserGetter();
+    },[])
 
     useEffect(() => {
         fetchData("processor", setProcessor, "processor");
@@ -45,7 +67,7 @@ const Product = () => {
 
     return (
       <>
-      <NavBar/>
+      {/* <NavBar/>
         <Box sx={{ mt:12, p: 3, width: "100%", overflowX: "hidden" }}>
             <Grid container spacing={3} justifyContent="center" alignItems="stretch">
                 {loading.summary && summary && (
@@ -79,7 +101,8 @@ const Product = () => {
                     </Grid>
                 )}
             </Grid>
-        </Box>
+        </Box> */}
+        <h1>hello</h1>
       </>
     );
 };

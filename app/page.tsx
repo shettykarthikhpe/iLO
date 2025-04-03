@@ -58,6 +58,8 @@ export default function Home() {
           setTimeout(() => {
             setModalOpen(false)
             localStorage.setItem("LoggedIn", "true");
+            console.log(response.data.token)
+            localStorage.setItem("token", response.data.token);
             handlePush()
           }, 3500)
         }, 3000)
