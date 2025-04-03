@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, UploadFile
 from pydantic import BaseModel
 import requests
 import redfish
@@ -402,3 +402,8 @@ async def Test(data: User):
             return ({"message": 'Failed to get health information', "success":True})
     except Exception as e:
          return ({"message":"Failed to get health information", "success":False})
+
+
+@app.post("/upload")
+def _file_upload(my_file: UploadFile = File(...)):
+    print(my_file)
