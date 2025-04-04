@@ -11,12 +11,12 @@ import StorageSummaryCard from "../Components/storageCard";
 import NavBar from "./Navbar";
 
 const Product = () => {
-    const [processor, setProcessor] = useState();
-    const [summary, setSummary] = useState([]);
-    const [device, setDevice] = useState();
-    const [memory, setMemory] = useState();
-    const [storage, setStorage] = useState();
-    const [network, setNetwork] = useState();
+    const [processor, setProcessor] = useState<any>();
+    const [summary, setSummary] = useState<any>([]);
+    const [device, setDevice] = useState<any>();
+    const [memory, setMemory] = useState<any>();
+    const [storage, setStorage] = useState<any>();
+    const [network, setNetwork] = useState<any>();
     const [loading, setLoading] = useState({
         summary: false, processor: false, memory: false,
         device: false, storage: false, network: false
@@ -57,12 +57,12 @@ const Product = () => {
     },[])
 
     useEffect(() => {
-        fetchData("processor", {username, ip, password} ,setProcessor, "processor");
-        fetchData("device", {username, ip, password}, setDevice, "device");
-        fetchData("summary",{username, ip, password}, setSummary, "summary");
-        fetchData("memory", {username, ip, password}, setMemory, "memory");
-        fetchData("network",{username, ip, password},  setNetwork, "network");
-        fetchData("storage",{username, ip, password},  setStorage, "storage");
+        processor && username && ip && password && fetchData("processor", {username, ip, password} ,setProcessor, "processor");
+        device && username && ip && password && fetchData("device", {username, ip, password}, setDevice, "device");
+        summary && username && ip && password && fetchData("summary",{username, ip, password}, setSummary, "summary");
+        memory && username && ip && password && fetchData("memory", {username, ip, password}, setMemory, "memory");
+        network && username && ip && password && fetchData("network",{username, ip, password},  setNetwork, "network");
+        storage && username && ip && password && fetchData("storage",{username, ip, password},  setStorage, "storage");
     }, [username, ip, password]);
 
     return (
