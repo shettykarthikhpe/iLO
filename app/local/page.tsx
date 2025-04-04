@@ -1,10 +1,15 @@
 "use client";
 
 import { useState, DragEvent, ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button"; // Importing ShadCN Button
 
 export default function Home() {
   const [status, setStatus] = useState<string>("");
+  const [file, setFile] = useState<File | null>(null);
   const [filePath, setFilePath] = useState<string>("");
+  const [ipList, setIpList] = useState<string[]>([""]);
+  const router = useRouter();
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -13,65 +18,109 @@ export default function Home() {
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (e.dataTransfer.files.length > 0) {
-      uploadFile(e.dataTransfer.files[0]);
+      setFile(e.dataTransfer.files[0]);
+      setStatus("File ready to upload.");
     }
   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      uploadFile(e.target.files[0]);
+      setFile(e.target.files[0]);
+      setStatus("File ready to upload.");
     }
   };
 
-  const uploadFile = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
+  const handleIpChange = (index: number, value: string) => {
+    const updatedIps = [...ipList];
+    updatedIps[index] = value;
+    setIpList(updatedIps);
+  };
 
-    try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        setStatus("File uploaded successfully!");
-        setFilePath(data.path);
-      } else {
-        setStatus("Upload failed.");
-      }
-    } catch (error) {
-      setStatus("Upload error.");
+  const addIp = () => {
+    if (ipList.length < 5) {
+      setIpList([...ipList, ""]);
     }
+  };
+
+  const removeIp = (index: number) => {
+    const updatedIps = ipList.filter((_, i) => i !== index);
+    setIpList(updatedIps);
   };
 
   return (
     <div style={styles.container}>
-      <div
-        style={styles.dragBox}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-      >
-        Drag & Drop your file here
+      {/* Left Side - IP Box */}
+      <div style={styles.leftPane}>
+        <div style={styles.ipBox}>
+          <h3 style={styles.heading}>IP Addresses</h3>
+          <div style={styles.ipList}>
+            {ipList.map((ip, index) => (
+              <div key={index} style={styles.ipItem}>
+                <input
+                  type="text"
+                  value={ip}
+                  onChange={(e) => handleIpChange(index, e.target.value)}
+                  placeholder="Enter IP address"
+                  style={styles.input}
+                />
+                <Button variant="destructive" size="icon" onClick={() => removeIp(index)}>
+                  ❌
+                </Button>
+              </div>
+            ))}
+          </div>
+          <div style={styles.buttonContainer}>
+            <Button variant="outline">🔄 Update</Button>
+            {ipList.length < 5 && (
+              <Button variant="default" onClick={addIp}>
+                ➕ Add IP
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
 
-      <input
-        type="file"
-        id="fileInput"
-        hidden
-        accept=".csv, .xlsx"
-        onChange={handleFileChange}
-      />
-      <button onClick={() => document.getElementById("fileInput")?.click()}>
-        Choose File
-      </button>
+      {/* Right Side - File Upload */}
+      <div style={styles.rightPane}>
+        <div style={styles.centerContent}>
+          <div
+            style={styles.dragBox}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          >
+            {file ? file.name : "Drag & Drop your file here"}
+          </div>
 
-      <p>{status}</p>
-      {filePath && (
-        <p>
-          Saved at: <strong>{filePath}</strong>
-        </p>
-      )}
+          <input
+            type="file"
+            id="fileInput"
+            hidden
+            accept=".csv, .xlsx"
+            onChange={handleFileChange}
+          />
+          <Button onClick={() => document.getElementById("fileInput")?.click()} variant="outline">
+            Choose File
+          </Button>
+
+          {file && (
+            <Button onClick={() => {}} variant="secondary">
+              📤 Upload File
+            </Button>
+          )}
+
+          <p>{status}</p>
+          {filePath && (
+            <p>
+              Saved at: <strong>{filePath}</strong>
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Next Button */}
+      <Button onClick={() => router.push("/next-page")} variant="default" style={styles.nextButton}>
+        Next ➡️
+      </Button>
     </div>
   );
 }
@@ -80,10 +129,59 @@ export default function Home() {
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     display: "flex",
+    height: "100vh",
+    position: "relative",
+  },
+  leftPane: {
+    width: "50%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRight: "2px solid #ddd",
+  },
+  rightPane: {
+    width: "50%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  ipBox: {
+    width: "300px",
+    padding: "20px",
+    border: "2px solid #ddd",
+    borderRadius: "10px",
+    textAlign: "center",
+    display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
-    height: "100vh",
+  },
+  heading: {
+    marginBottom: "15px",
+    textAlign: "center",
+  },
+  ipList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    width: "100%",
+  },
+  ipItem: {
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+  },
+  input: {
+    flex: 1,
+    padding: "5px",
+    marginRight: "10px",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+  },
+  buttonContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: "15px",
   },
   dragBox: {
     width: "300px",
@@ -94,5 +192,11 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: "center",
     textAlign: "center",
     marginBottom: "20px",
+    padding: "10px",
+  },
+  nextButton: {
+    position: "absolute",
+    bottom: "20px",
+    right: "20px",
   },
 };
