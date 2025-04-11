@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, DragEvent, ChangeEvent } from "react";
+import { useState, DragEvent, ChangeEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button"; // Importing ShadCN Button
+import axios from "axios";
 
 export default function Home() {
   const [status, setStatus] = useState<string>("");
@@ -36,13 +37,66 @@ export default function Home() {
     setIpList(updatedIps);
   };
 
+  const getIp = async ()=>{
+    try {
+      const response = await axios.post("/api/getSut",{
+        userId: "72727"
+      })
+      if(response.data.success){
+        setIpList(response.data.data.sut)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(()=>{
+    getIp();
+  }, [])
+
+  const addIptoDb = async (ip: string)=>{
+    try{
+      const response = await axios.post("/api/addSut",{
+        userId:"72727",
+        ip: ip,
+        username: "shetty"
+      })
+      console.log(response)
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   const addIp = () => {
     if (ipList.length < 5) {
       setIpList([...ipList, ""]);
     }
   };
 
-  const removeIp = (index: number) => {
+  const Update = async ()=>{
+    if(ipList.length > 0){
+      ipList.map((i)=>{
+        addIptoDb(i)
+      })
+    }
+  }
+
+  const removeIpFromDb = async (ip:string, userId:string) =>{
+    try {
+      const response = await axios.post("/api/removeSut",{
+        ip:ip,
+        userId:userId
+      })
+      if(response.data.success){
+        setIpList(response.data.data.sut)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const removeIp = async(index: number) => {
+    await removeIpFromDb(ipList[index], "72727")
     const updatedIps = ipList.filter((_, i) => i !== index);
     setIpList(updatedIps);
   };
@@ -70,7 +124,7 @@ export default function Home() {
             ))}
           </div>
           <div style={styles.buttonContainer}>
-            <Button variant="outline">🔄 Update</Button>
+            <Button variant="outline" onClick={Update}>🔄 Update</Button>
             {ipList.length < 5 && (
               <Button variant="default" onClick={addIp}>
                 ➕ Add IP

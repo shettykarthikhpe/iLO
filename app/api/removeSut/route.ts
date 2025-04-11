@@ -1,24 +1,28 @@
-import axios from "axios";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
+import dbConnect from "@/app/lib/mongodb";
+import Sut from "@/app/models/Sut";
 
 export async function POST(req: NextRequest) {
+    await dbConnect();
+
   if(req.method !== "POST"){
     return NextResponse.json({ success: false, message: "Not allowed" });
   }
 
   try {
     const body = await req.json();
-    const url = body.body.ip;
-    const user_name = body.body.username;
-    const password = body.body.password;
+    const userId = body.userId;
+    const ip = body.ip;
 
-    const resp = await axios.post("http://127.0.0.1:8000/health",{
-        url: url,
-        username: user_name,
-        password: password
-      });
-    return NextResponse.json({ success: true, data:resp.data });
+    const exisIp = await Sut.findOne({userId: userId});
+
+    exisIp.sut.remove(ip);
+    await exisIp.save();
+    
+    const response = await Sut.findOne({userId: userId});
+
+    return NextResponse.json({ success: true, data: response});
   } catch (error: any) {
     console.error("Error", error.message);
     return NextResponse.json(

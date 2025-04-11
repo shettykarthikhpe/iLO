@@ -10,7 +10,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const url = body.body.ip;
-    console.log(body.body.ip)
     const user_name = body.body.username;
     const password = body.body.password;
 

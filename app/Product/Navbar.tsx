@@ -32,6 +32,7 @@ const NavBar = () => {
             const response = await axios.post("/api/logout");
             if(response.data.data.success){
                 localStorage.setItem("LoggedIn","false")
+                localStorage.removeItem("token")
                 setSuccess(true);
                 setMessage("Logged Out Successfully")
                 setAlert(true);

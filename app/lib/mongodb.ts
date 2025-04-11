@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Mongoose } from 'mongoose';
 
 const MONGODB_URI = 'mongodb+srv://abhishekdrai85:Abhishek29@cluster0.4kjtl.mongodb.net/hp?retryWrites=true&w=majority&appName=Cluster0';
 
@@ -6,13 +6,17 @@ if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable');
 }
 
-/** 
- * Cached connection for MongoDB.
- */
-let cached = global.mongoose;
+declare global{
+  var mongooseCache: {
+    conn: Mongoose | null;
+    promise: Promise<Mongoose> | null;
+  };
+}
+
+let cached = global.mongooseCache;
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = global.mongooseCache = { conn: null, promise: null };
 }
 
 async function dbConnect() {
