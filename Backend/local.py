@@ -72,15 +72,16 @@ def DriveGetter():
          return ([])
 
 
-filename = "../csv/ilo.csv"
+filename = "../uploads/iLO_OC_Accessories_Inventory_sheet.csv"
 df = pd.read_csv(filename, encoding="ISO-8859-1")
 
 ActualDrives= DriveGetter()
-
 drive_str_no = df[df['Type'].str.lower()=='drive' ]['SR no']
-
-matched = drive_str_no[drive_str_no.isin(ActualDrives)]
-print(matched)
+# print(drive_str_no.isin(ActualDrives))
+# print(drive_str_no)
+matchedDrives= []
+matched = drive_str_no[drive_str_no.isin(ActualDrives[0])]
+print("macthed are",matched)
 
 # for rows in df:
 #     if rows == 'Type':
@@ -88,7 +89,6 @@ print(matched)
         # for item in df[rows]:
         #     if item == 'Drive':
         # 					print(item)
-          
           
           
         # if df[rows][1] == 'Drive':  

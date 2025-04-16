@@ -433,11 +433,37 @@ def converter(data:File):
     file_name = data.filename
     file_converter(file_name)
     print(file_name)
+    
+Drives= []
+def DriveGetter():
+    url = "10.132.147.215"
+    username = "Administrator"
+    password = "GXJYN722"
+    # Create a Redfish client object and connect to the API
+    client = redfish.redfish_client(base_url=url, username=username, password=password)
+    try:
+        client.login(auth=redfish.AuthMethod.SESSION)
+        # Perform some tasks using the Redfish API
+        response = client.get('/redfish/v1/Systems/1/Storage/')
+        if response.status == 200:
+            for murl in response.dict["Members"]:
+                resp = client.get(murl["@odata.id"])
+                for mul in resp.dict["Drives"]:
+                    re= client.get(mul["@odata.id"])
+                    Drives.append(re.dict['SerialNumber'])
+            return ([Drives])
+        else:
+            return ([])
+    except Exception as e:
+         return ([])
+
 
 @app.post("/content")
 def getContent(data:File):
     file_original_name = os.path.splitext(data.filename)[0]
     filename = f"../uploads/{file_original_name}.csv"
     df = pd.read_csv(filename, encoding="ISO-8859-1")
+    ActualDrives= DriveGetter()
     drive_str_no = df[df['Type'].str.lower()=='drive' ]['SR no']
-    return([drive_str_no])
+    matched = drive_str_no[drive_str_no.isin(ActualDrives[0])]
+    return ([matched])
