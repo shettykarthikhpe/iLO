@@ -5,6 +5,7 @@ import redfish
 import openpyxl
 import os
 import csv
+import pandas as pd
 
 app = FastAPI()
  
@@ -431,3 +432,12 @@ def file_converter(file_name):
 def converter(data:File):
     file_name = data.filename
     file_converter(file_name)
+    print(file_name)
+
+@app.post("/content")
+def getContent(data:File):
+    file_original_name = os.path.splitext(data.filename)[0]
+    filename = f"../uploads/{file_original_name}.csv"
+    df = pd.read_csv(filename, encoding="ISO-8859-1")
+    drive_str_no = df[df['Type'].str.lower()=='drive' ]['SR no']
+    return([drive_str_no])

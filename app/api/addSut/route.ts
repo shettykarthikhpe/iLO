@@ -14,7 +14,6 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const ip = body.ip;
     const userId = body.userId;
-    const username = body.username;
 
     const exisIp = await Sut.findOne({userId: userId});
 
@@ -30,7 +29,6 @@ export async function POST(req: NextRequest) {
 
     const newIp = new Sut({
         userId: userId,
-        name: username,
         sut:ip
     });
     const resp = await newIp.save();

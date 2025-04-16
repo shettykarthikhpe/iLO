@@ -9,8 +9,27 @@ export default function Home() {
   const [status, setStatus] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [filePath, setFilePath] = useState<string>("");
-  const [ipList, setIpList] = useState<string[]>([""]);
+  const [ipList, setIpList] = useState<string[]>([]);
   const router = useRouter();
+  const [removeFileUploader, setRemoveFileUploader] = useState(false);
+  const [token, setToken ] = useState("");
+  const [fileName, setFileName] = useState("")
+  const [content, setContent] = useState([])
+
+  const tokenGetter = async() =>{
+    try{
+      const tok = await localStorage.getItem("token");
+      if(tok){
+        setToken(tok);
+      }
+    }catch(err){
+      console.log(err)
+    }
+  }
+
+  useEffect(()=>{
+    tokenGetter();
+  }, [])
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -40,8 +59,9 @@ export default function Home() {
   const getIp = async ()=>{
     try {
       const response = await axios.post("/api/getSut",{
-        userId: "72727"
+        userId: JSON.stringify(token)
       })
+      console.log(response.data)
       if(response.data.success){
         setIpList(response.data.data.sut)
       }
@@ -51,17 +71,47 @@ export default function Home() {
   }
 
   useEffect(()=>{
-    getIp();
-  }, [])
+    token && getIp();
+  }, [token])
+
+
+  const uploadFile = async (file: File) => {
+    const formData = new FormData();
+    // setFileName(file.name.split('.')[0])
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      console.log("response is", response)
+      if (response.ok) {
+        setStatus("File uploaded successfully!");
+        setFilePath(data.path);
+        setTimeout(() => {
+          setRemoveFileUploader(true);
+        }, 3000);
+        setTimeout(() => {
+          getFileConetnt(file.name.split('.')[0])
+        }, 5000);
+      } else {
+        setStatus("Upload failed.");
+      }
+    } catch (error) {
+      console.log(error)
+      setStatus("Upload error.");
+    }
+  }
+
 
   const addIptoDb = async (ip: string)=>{
     try{
       const response = await axios.post("/api/addSut",{
-        userId:"72727",
+        userId: token,
         ip: ip,
-        username: "shetty"
       })
-      console.log(response)
     }catch(err){
       console.log(err)
     }
@@ -81,6 +131,18 @@ export default function Home() {
     }
   }
 
+  const getFileConetnt = async (filename:any)=>{
+    console.log("filename in the code", fileName)
+    try{
+      const response = await axios.post("/api/content",{
+        filename:filename
+      })
+      setContent(response.data)
+    }catch(err){
+      console.log(err)
+    }
+  }
+
   const removeIpFromDb = async (ip:string, userId:string) =>{
     try {
       const response = await axios.post("/api/removeSut",{
@@ -96,7 +158,7 @@ export default function Home() {
   }
 
   const removeIp = async(index: number) => {
-    await removeIpFromDb(ipList[index], "72727")
+    await removeIpFromDb(ipList[index], token)
     const updatedIps = ipList.filter((_, i) => i !== index);
     setIpList(updatedIps);
   };
@@ -108,7 +170,7 @@ export default function Home() {
         <div style={styles.ipBox}>
           <h3 style={styles.heading}>IP Addresses</h3>
           <div style={styles.ipList}>
-            {ipList.map((ip, index) => (
+            {token && ipList.map((ip, index) => (
               <div key={index} style={styles.ipItem}>
                 <input
                   type="text"
@@ -135,46 +197,51 @@ export default function Home() {
       </div>
 
       {/* Right Side - File Upload */}
-      <div style={styles.rightPane}>
-        <div style={styles.centerContent}>
-          <div
-            style={styles.dragBox}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-          >
-            {file ? file.name : "Drag & Drop your file here"}
-          </div>
+    { !removeFileUploader &&  <div style={styles.rightPane}>
+          <div style={styles.centerContent}>
+            <div
+              style={styles.dragBox}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+            >
+              {file ? file.name : "Drag & Drop your file here"}
+            </div>
 
-          <input
-            type="file"
-            id="fileInput"
-            hidden
-            accept=".csv, .xlsx"
-            onChange={handleFileChange}
-          />
-          <Button onClick={() => document.getElementById("fileInput")?.click()} variant="outline">
-            Choose File
-          </Button>
-
-          {file && (
-            <Button onClick={() => {}} variant="secondary">
-              📤 Upload File
+            <input
+              type="file"
+              id="fileInput"
+              hidden
+              accept=".csv, .xlsx"
+              onChange={handleFileChange}
+            />
+            <Button onClick={() => document.getElementById("fileInput")?.click()} variant="outline">
+              Choose File
             </Button>
-          )}
 
-          <p>{status}</p>
-          {filePath && (
-            <p>
-              Saved at: <strong>{filePath}</strong>
-            </p>
-          )}
-        </div>
-      </div>
+            {file && (
+              <Button onClick={() => {uploadFile(file)}} variant="secondary">
+                📤 Upload File
+              </Button>
+            )}
 
-      {/* Next Button */}
-      <Button onClick={() => router.push("/next-page")} variant="default" style={styles.nextButton}>
-        Next ➡️
-      </Button>
+            <p>{status}</p>
+            {filePath && (
+              <p>
+                Saved at: <strong>{filePath}</strong>
+              </p>
+            )}
+          </div>
+        </div>}
+      
+    { removeFileUploader && <>
+      {content && content.map((c) =>{
+        return(
+          <div key={c[0]}>
+            <h1>{c[1]}</h1>
+          </div>
+        )
+      })}
+    </>}
     </div>
   );
 }

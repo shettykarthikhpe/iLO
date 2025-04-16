@@ -24,6 +24,8 @@ export default function Home() {
   const [alert, setAlert] = useState(false);
   const [success, setSuccess] = useState(false);
   const [message, setMessage] = useState("");
+  const [name, setName] = useState("");
+
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -47,19 +49,21 @@ export default function Home() {
       const response = await axios.post("/api/login",{
         body: {
           url:ip,
+          name:name,
           username:username,
           password:password
         }
       })
-      if(response.data.data.success){
+      console.log(response.data.data)
+      if(response.data.data.success || response.data.success ){
         setTimeout(() => {
           setIsLoading(false)
           setFormSubmitted(true)
           setTimeout(() => {
             setModalOpen(false)
             localStorage.setItem("LoggedIn", "true");
-            console.log(response.data.token)
-            localStorage.setItem("token", response.data.token);
+            console.log(response.data.userId)
+            localStorage.setItem("token", response.data.userId);
             handlePush()
           }, 3500)
         }, 3000)
@@ -254,6 +258,29 @@ export default function Home() {
               <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">Enter your IP address to proceed with secure access</p>
             </motion.div>
             
+            <div className="space-y-6 mb-4">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiWifi className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                  </div>
+                  <input
+                    id="name"
+                    type="text"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }}
+                    placeholder="Username"
+                    className={`pl-10 w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-blue-500} focus:border-transparent focus:outline-none focus:ring-2 transition-all duration-200 bg-gray-50/80 dark:bg-gray-700/80 text-gray-900 dark:text-gray-100 backdrop-blur-sm`}
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-6">
               <div>
                 <label htmlFor="ip-address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

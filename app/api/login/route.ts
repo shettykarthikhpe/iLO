@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
     const url = body.body.url;
     const user_name = body.body.username;
     const password = body.body.password;
+    const name = body.body.name;
     const uid = Math.random().toString(36).substring(2, 10+2)
 
     const resp = await axios.post("http://127.0.0.1:8000/login",{
@@ -22,17 +23,23 @@ export async function POST(req: NextRequest) {
         username: user_name,
         password: password
       });
+
+      const exisitingUser = await User.findOne({name:name});
       
+      if(exisitingUser){
+        return NextResponse.json({ success: true, data: exisitingUser, userId:exisitingUser.userId});
+      }
+
       const user = new User({
         userId: uid,
-        name: "shetty",
-        ip:url,
+        name: name,
+        ip: url,
         username: user_name,
         password: password
       })
 
       await user.save()
-    return NextResponse.json({ success: true, data: resp.data, token:uid});
+    return NextResponse.json({ success: true, data: resp.data, userId:uid});
   } catch (error: any) {
     console.error("Error", error.message);
     return NextResponse.json(
