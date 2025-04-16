@@ -30,8 +30,6 @@ export async function POST(req: NextRequest) {
     const resp = await axios.post("http://127.0.0.1:8000/upload",{
         filename:file.name
     })
-
-    console.log(resp)
     
     return NextResponse.json({
       message: "File uploaded successfully",

@@ -4,6 +4,8 @@ import { useState, DragEvent, ChangeEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button"; // Importing ShadCN Button
 import axios from "axios";
+import { FiLoader } from "react-icons/fi";
+import { ArrowBackIosNew, ArrowForward } from "@mui/icons-material";
 
 export default function Home() {
   const [status, setStatus] = useState<string>("");
@@ -15,6 +17,7 @@ export default function Home() {
   const [token, setToken ] = useState("");
   const [fileName, setFileName] = useState("")
   const [content, setContent] = useState([])
+  const [contentLoader, setContentLoader] = useState(false);
 
   const tokenGetter = async() =>{
     try{
@@ -50,6 +53,10 @@ export default function Home() {
     }
   };
 
+  const handleIPClick = async (value:any)=>{
+      console.log(value)
+  }
+
   const handleIpChange = (index: number, value: string) => {
     const updatedIps = [...ipList];
     updatedIps[index] = value;
@@ -61,7 +68,6 @@ export default function Home() {
       const response = await axios.post("/api/getSut",{
         userId: JSON.stringify(token)
       })
-      console.log(response.data)
       if(response.data.success){
         setIpList(response.data.data.sut)
       }
@@ -77,16 +83,15 @@ export default function Home() {
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
-    // setFileName(file.name.split('.')[0])
+    formData.append("file", file);
+    setFileName(file.name.split('.')[0])
 
     try {
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
-
       const data = await response.json();
-      console.log("response is", response)
       if (response.ok) {
         setStatus("File uploaded successfully!");
         setFilePath(data.path);
@@ -100,11 +105,9 @@ export default function Home() {
         setStatus("Upload failed.");
       }
     } catch (error) {
-      console.log(error)
       setStatus("Upload error.");
     }
   }
-
 
   const addIptoDb = async (ip: string)=>{
     try{
@@ -132,13 +135,15 @@ export default function Home() {
   }
 
   const getFileConetnt = async (filename:any)=>{
-    console.log("filename in the code", fileName)
     try{
+      setContentLoader(true)
       const response = await axios.post("/api/content",{
         filename:filename
       })
-      setContent(response.data)
+      setContent(response.data.data[0])
+      setContentLoader(false)
     }catch(err){
+      setContentLoader(false)
       console.log(err)
     }
   }
@@ -181,6 +186,9 @@ export default function Home() {
                 />
                 <Button variant="destructive" size="icon" onClick={() => removeIp(index)}>
                   ❌
+                </Button>
+                <Button className="ml-2" variant="secondary" size="icon" onClick={(e) => handleIPClick(ip)}>
+                  <ArrowForward fontSize="large" />
                 </Button>
               </div>
             ))}
@@ -233,15 +241,16 @@ export default function Home() {
           </div>
         </div>}
       
-    { removeFileUploader && <>
-      {content && content.map((c) =>{
-        return(
-          <div key={c[0]}>
-            <h1>{c[1]}</h1>
+    { !contentLoader && removeFileUploader ? <>
+      {!contentLoader && content && <span className="m-4 font-bold pb-12">Drives</span>}
+      {!contentLoader && content &&  Object.values(content).map((value, index)=>{
+        return (
+          <div key={index} className="m-8">
+            <h3 >{value}</h3>
           </div>
         )
       })}
-    </>}
+      </> : contentLoader && <div className="mt-20 ml-40"><FiLoader size={50} color="red"><span>Fetching your data</span></FiLoader> </div>}
     </div>
   );
 }
