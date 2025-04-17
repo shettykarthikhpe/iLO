@@ -43,7 +43,7 @@ const StorageSummaryCard = ({ data }:any) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((item:any, idx:any) => (
+            {data && data.map((item:any, idx:any) => (
               <TableRow
                 key={idx}
                 sx={{ backgroundColor: item.entity === "Storage Controllers" ? "" : "inherit" }}

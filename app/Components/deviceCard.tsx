@@ -26,12 +26,12 @@ interface DeviceCardProps {
 
 // Utility function to return an icon based on device status
 const getStatusIcon = (status: string) => {
-  const s = status.toLowerCase();
-  if (s === "enabled") {
+  // const s = status.toLowerCase();
+  if (status === "Enabled") {
     return <CheckCircleIcon sx={{ color: "#17eba0", fontSize: 18 }} />;
-  } else if (s === "N/A") {
+  } else if (status === "N/A") {
     return <WarningAmberIcon sx={{ color: "orange", fontSize: 18 }} />;
-  } else if (s === "absent" || s === "unsupported") {
+  } else if (status === "Absent" || status === "Unsupported") {
     return <ErrorIcon sx={{ color: "red", fontSize: 18 }} />;
   }
   return null;

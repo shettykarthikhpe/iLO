@@ -16,7 +16,7 @@ const NavBar = () => {
 
     const getHealth = async()=>{
         try{
-            const response = await axios.post("/api/health");
+            const response = await axios.post("/api/health", {body: {"ip":"10.132.147.215", "username":"Administrator", "password":"GXJYN722"}});
             setHealth(response.data.data[0]["Health"])
         }catch(err){
             console.log(err)

@@ -275,8 +275,6 @@ def Summary(data:User):
     except Exception as e:
         return ({"error": e})
    
- 
- 
 Memo= []
 Controllers= []
 Drives= []
@@ -332,7 +330,7 @@ def Storage(data:User):
                 respons= client.get(item)
                 Controllers.append({"Model":respons.dict["Model"], "Status":respons.dict["Status"]})  
             ControllerCount.append(len(Controllers))
-   
+                
             # return (ControllerCount)
             # for murl in response.dict["Members"]:
             #     resp = client.get(murl["@odata.id"])
@@ -344,11 +342,10 @@ def Storage(data:User):
             #         resps= client.get(item["@odata.id"])
             #         Enclosure.append([resps.dict])
             #     return (Enclosure)
-            print(ControllerCount)
-        return ([{"entity":"Storage Controller", "count":ControllerCount, "health":"OK"}, {"entity":"Drives","count":DrivesCount, "health":"OK"}])
+            # return(ControllerCount)
+        return([{"entity":"Storage Controller", "count":ControllerCount, "health":"OK"}, {"entity":"Drives","count":DrivesCount, "health":"OK"}])
     except Exception as e:
         return ({"error": e})
-
 
 @app.post("/logout/")
 async def logout(data: User):
@@ -384,7 +381,6 @@ async def Health(data: User):
     except Exception as e:
          return ({"message":"Failed to get health information", "success":False})
  
-
 @app.post("/test")
 async def Test(data: User):
     url = data.url
