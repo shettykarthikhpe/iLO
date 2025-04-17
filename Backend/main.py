@@ -467,3 +467,50 @@ def getContent(data:File):
     drive_str_no = df[df['Type'].str.lower()=='drive' ]['SR no']
     matched = drive_str_no[drive_str_no.isin(ActualDrives[0])]
     return ([matched])
+
+class Tester(BaseModel):
+    url: str
+    username: str
+    password: str
+    endpoint:str
+    partNumber:str
+    
+DrivesArray= []
+DevicesArray= []
+@app.post("/tester")
+async def Tester(data: Tester):
+    url = data.url
+    username = data.username
+    password = data.password
+    endpoint = data.endpoint
+    partNumber = data.partNumber
+    # Create a Redfish client object and connect to the API
+    client = redfish.redfish_client(base_url=url, username=username, password=password)
+    try:
+        client.login(auth=redfish.AuthMethod.SESSION)
+        # Perform some tasks using the Redfish API
+        response = client.get(endpoint)
+        if response.status == 200:
+            return(response.dict)
+            try:
+                respons = response.dict["Members"]
+                DrivesArray.append(respons)
+            except e:
+                print(e)
+            # print(f"array is {DrivesArray}")
+        for item in DrivesArray[0]:
+            response = client.get(item['@odata.id'])
+            if response.status == 200:
+                for it in ([response.dict['Oem']['Hpe']['Links']['Devices']]):
+                    respo = client.get(it['@odata.id'])
+                    if respo.status == 200:
+                        for i in (respo.dict['Members']):
+                            resp = client.get(i['@odata.id'])
+                            if resp.status == 200:
+                                if partNumber == resp.dict['PartNumber']:
+                                    return (resp.dict)
+        else:
+            return ({"message": 'Failed to get health information', "success":True})
+    except Exception as e:
+         return ({"message":"Failed to get health information", "success":False})
+ 
