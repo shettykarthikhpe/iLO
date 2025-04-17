@@ -43,12 +43,12 @@ const Display: React.FC<PageProps> = ({ip, username, password}) => {
     };
 
     useEffect(() => {
-        processor && username && ip && password && fetchData("processor", {username, ip, password} ,setProcessor, "processor");
-        device && username && ip && password && fetchData("device", {username, ip, password}, setDevice, "device");
-        summary && username && ip && password && fetchData("summary",{username, ip, password}, setSummary, "summary");
-        memory && username && ip && password && fetchData("memory", {username, ip, password}, setMemory, "memory");
-        network && username && ip && password && fetchData("network",{username, ip, password},  setNetwork, "network");
-        storage && username && ip && password && fetchData("storage",{username, ip, password},  setStorage, "storage");
+        fetchData("processor", {username, ip, password} ,setProcessor, "processor");
+        fetchData("device", {username, ip, password}, setDevice, "device");
+        fetchData("summary",{username, ip, password}, setSummary, "summary");
+        fetchData("memory", {username, ip, password}, setMemory, "memory");
+        fetchData("network",{username, ip, password},  setNetwork, "network");
+        fetchData("storage",{username, ip, password},  setStorage, "storage");
     }, [username, ip, password]);
 
     return (

@@ -456,8 +456,8 @@ def DriveGetter():
             return ([])
     except Exception as e:
          return ([])
-
-
+   
+     
 @app.post("/content")
 def getContent(data:File):
     file_original_name = os.path.splitext(data.filename)[0]
@@ -491,7 +491,6 @@ async def Tester(data: Tester):
         # Perform some tasks using the Redfish API
         response = client.get(endpoint)
         if response.status == 200:
-            return(response.dict)
             try:
                 respons = response.dict["Members"]
                 DrivesArray.append(respons)
