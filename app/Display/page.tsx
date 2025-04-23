@@ -21,7 +21,7 @@ interface PageProps {
 const Display: React.FC<PageProps> = ({ ip, username, password }) => {
   const [ipList, setIpList] = useState<any[]>([]);
   const [token, setToken] = useState("");
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(false);
   const [currentIp, setCurrentIp] = useState(ip);
   const [currentUser, setCurrentUser] = useState(username);
   const [currentPass, setCurrentPass] = useState(password);
@@ -30,12 +30,12 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
     device: false, storage: false, network: false
   });
 
-  const [processor, setProcessor] = useState<any>();
+  const [processor, setProcessor] = useState<any>([]);
   const [summary, setSummary] = useState<any>([]);
-  const [device, setDevice] = useState<any>();
-  const [memory, setMemory] = useState<any>();
-  const [storage, setStorage] = useState<any>();
-  const [network, setNetwork] = useState<any>();
+  const [device, setDevice] = useState<any>([]);
+  const [memory, setMemory] = useState<any>([]);
+  const [storage, setStorage] = useState<any>([]);
+  const [network, setNetwork] = useState<any>([]);
 
   const tokenGetter = async () => {
     const tok = await localStorage.getItem("token");
@@ -130,32 +130,32 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
               <FiLoader size={40} />
             </Grid>
           )}
-          {loading.summary && summary && (
+          {loading.summary && summary && summary.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
               <SummaryCard data={summary} />
             </Grid>
           )}
-          {loading.memory && memory && (
+          {loading.memory && memory && memory.length > 0 &&  (
             <Grid item xs={12} sm={6} md={4} lg={4}>
               <MemoryCard data={memory} />
             </Grid>
           )}
-          {loading.device && device && (
+          {loading.device && device && device.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
               <DeviceCard data={device} />
             </Grid>
           )}
-          {loading.processor && processor && (
+          {loading.processor && processor && processor.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
               <ProcessorCard data={processor} />
             </Grid>
           )}
-          {loading.network && network && (
+          {loading.network && network && network.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
               <NetworkSummaryCard rawData={network} />
             </Grid>
           )}
-          {loading.storage && storage && (
+          {loading.storage && storage && storage.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
               <StorageSummaryCard rawData={storage} />
             </Grid>

@@ -103,19 +103,6 @@ export default function Home() {
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
-<<<<<<< HEAD
-        {
-            loading && <div className="text-center mt-20 ml-30"><FiLoader size={40} /></div>
-        }
-        {
-            !ipClciked && !loading &&
-            <>
-            {/* Sidebar Toggle */}
-            <div style={styles.menuButtonWrapper}>
-                <Button onClick={() => setShowSidebar(!showSidebar)}>
-                <MenuIcon/>
-                </Button>
-=======
       {loading && (
         <div className="text-center mt-20 ml-30">
           <FiLoader size={40} />
@@ -168,7 +155,6 @@ export default function Home() {
                   <Button onClick={() => setShowDialog(true)}>Add IP</Button>
                 )}
               </div>
->>>>>>> 52d9483a58dde7c5cf143fa06eb2ef41c5e0ed6d
             </div>
           )}
 
