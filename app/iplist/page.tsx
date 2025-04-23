@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { ArrowForward, Menu as MenuIcon, Password } from "@mui/icons-material";
+import { ArrowForward, Menu as MenuIcon, Padding, Password } from "@mui/icons-material";
 import Display from "../Display/page";
 import { FiLoader } from "react-icons/fi";
 
@@ -61,12 +61,6 @@ export default function Home() {
     }
   };
 
-  const Update = async () => {
-    if (ipList.length > 0) {
-      ipList.forEach((i) => addIptoDb(i));
-    }
-  };
-
   const removeIpFromDb = async (ip: string) => {
     try {
       const response = await axios.post("/api/removeSut", {
@@ -113,7 +107,7 @@ export default function Home() {
             {/* Sidebar Toggle */}
             <div style={{ position: "absolute", top: 20, left: 20 }}>
                 <Button onClick={() => setShowSidebar(!showSidebar)}>
-                <MenuIcon />
+                <MenuIcon/>
                 </Button>
             </div>
 
@@ -149,7 +143,6 @@ export default function Home() {
                     </div>
                 ))}
                 <div style={styles.sidebarButtons}>
-                    <Button onClick={Update}>Update</Button>
                     {ipList.length < 5 && (
                     <Button onClick={() => setShowDialog(true)}>Add IP</Button>
                     )}
@@ -210,6 +203,7 @@ export default function Home() {
                         setNewIp("");
                         setNewUser("");
                         setNewPass("");
+                        window.location.reload();
                         }}
                     >
                         Add
