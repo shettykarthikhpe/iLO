@@ -13,13 +13,15 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const ip = body.ip;
+    const username = body.username;
+    const password = body.password;
     const userId = body.userId;
 
     const exisIp = await Sut.findOne({userId: userId});
 
     if(exisIp){
        if(!exisIp.sut.includes(ip)){
-        exisIp.sut.push(ip);
+        exisIp.sut.push({ip:ip, username:username, password:password});
         const response = exisIp.save();
         return NextResponse.json({ success: true, data: response});
        }else{
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     const newIp = new Sut({
         userId: userId,
-        sut:ip
+        sut:{ip:ip, username:username, password:password}
     });
     const resp = await newIp.save();
 
