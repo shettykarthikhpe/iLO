@@ -105,7 +105,7 @@ export default function Home() {
             !ipClciked && !loading &&
             <>
             {/* Sidebar Toggle */}
-            <div style={{ position: "absolute", top: 20, left: 20 }}>
+            <div style={styles.menuButtonWrapper}>
                 <Button onClick={() => setShowSidebar(!showSidebar)}>
                 <MenuIcon/>
                 </Button>
@@ -224,10 +224,14 @@ export default function Home() {
 
 const styles: { [key: string]: React.CSSProperties } = {
   sidebar: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    height: "100vh",
     width: "300px",
     backgroundColor: "#ffffff",
     borderRight: "1px solid #ddd",
-    padding: "20px",
+    padding: "80px 20px 20px",
     display: "flex",
     flexDirection: "column",
     gap: "15px",
@@ -255,6 +259,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     marginTop: "auto",
     display: "flex",
     justifyContent: "space-between",
+  },
+  menuButtonWrapper: {
+    position: "fixed",
+    top: "20px",
+    left: "20px",
+    zIndex: 1000,
   },
   modalBackdrop: {
     position: "fixed",
