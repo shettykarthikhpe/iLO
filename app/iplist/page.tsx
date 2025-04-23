@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { ArrowForward, Menu as MenuIcon, Password } from "@mui/icons-material";
+import { ArrowForward, Menu as MenuIcon, Padding, Password } from "@mui/icons-material";
 import Display from "../Display/page";
 import { FiLoader } from "react-icons/fi";
 
@@ -68,12 +68,6 @@ export default function Home() {
     }
   };
 
-  const Update = async () => {
-    if (ipList.length > 0) {
-      ipList.forEach((i) => addIptoDb(i));
-    }
-  };
-
   const removeIpFromDb = async (ip: string) => {
     try {
       const response = await axios.post("/api/removeSut", {
@@ -111,6 +105,7 @@ export default function Home() {
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
+<<<<<<< HEAD
       {loading && (
         <div className="text-center mt-20 ml-30">
           <FiLoader size={40} />
@@ -164,9 +159,23 @@ export default function Home() {
                   <Button onClick={() => setShowDialog(true)}>Add IP</Button>
                 )}
               </div>
+=======
+        {
+            loading && <div className="text-center mt-20 ml-30"><FiLoader size={40} /></div>
+        }
+        {
+            !ipClciked && !loading &&
+            <>
+            {/* Sidebar Toggle */}
+            <div style={{ position: "absolute", top: 20, left: 20 }}>
+                <Button onClick={() => setShowSidebar(!showSidebar)}>
+                <MenuIcon/>
+                </Button>
+>>>>>>> 66e072b7ae514e3287fca8649e89bc5cdce3eb76
             </div>
           )}
 
+<<<<<<< HEAD
           {/* Main Content */}
           <div
             style={{
@@ -183,6 +192,46 @@ export default function Home() {
                 : "Welcome!"}
             </h1>
           </div>
+=======
+            {/* Sidebar */}
+            {showSidebar && (
+                <div style={styles.sidebar}>
+                <h2 style={styles.sidebarTitle}></h2>
+                {ipList.map((ip, index) => (
+                    <div key={index} style={styles.ipItem}>
+                    <input
+                        type="text"
+                        value={ip.ip}
+                        onChange={(e) => {
+                        const updated = [...ipList];
+                        updated[index] = e.target.value;
+                        setIpList(updated);
+                        }}
+                        style={styles.ipInput}
+                    />
+                    <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => removeIp(index)}
+                    ></Button>
+                    <Button
+                        className="ml-2"
+                        variant="secondary"
+                        size="icon"
+                        onClick={()=>handleIpClick(ip.ip, ip.username, ip.password)}
+                    >
+                        <ArrowForward />
+                    </Button>
+                    </div>
+                ))}
+                <div style={styles.sidebarButtons}>
+                    {ipList.length < 5 && (
+                    <Button onClick={() => setShowDialog(true)}>Add IP</Button>
+                    )}
+                </div>
+                </div>
+            )}
+>>>>>>> 66e072b7ae514e3287fca8649e89bc5cdce3eb76
 
           {/* Add IP Dialog */}
           {showDialog && (
@@ -230,7 +279,56 @@ export default function Home() {
                 </div>
               </div>
             </div>
+<<<<<<< HEAD
           )}
+=======
+
+            {/* Add IP Dialog */}
+            {showDialog && (
+                <div style={styles.modalBackdrop}>
+                <div style={styles.modalBox}>
+                    <h3>Add New IP</h3>
+                    <input
+                    placeholder="IP Address"
+                    value={newIp}
+                    onChange={(e) => setNewIp(e.target.value)}
+                    style={styles.input}
+                    />
+                    <input
+                    placeholder="Username"
+                    value={newUser}
+                    onChange={(e) => setNewUser(e.target.value)}
+                    style={styles.input}
+                    />
+                    <input
+                    type="password"
+                    placeholder="Password"
+                    value={newPass}
+                    onChange={(e) => setNewPass(e.target.value)}
+                    style={styles.input}
+                    />
+                    <div style={styles.dialogButtons}>
+                    <Button variant="outline" onClick={() => setShowDialog(false)}>
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={() => {
+                        setIpList([...ipList, newIp]);
+                        addIptoDb(newIp);
+                        setShowDialog(false);
+                        setNewIp("");
+                        setNewUser("");
+                        setNewPass("");
+                        window.location.reload();
+                        }}
+                    >
+                        Add
+                    </Button>
+                    </div>
+                </div>
+                </div>
+            )}
+>>>>>>> 66e072b7ae514e3287fca8649e89bc5cdce3eb76
         </>
       )}
       {ipClciked && !loading && (
