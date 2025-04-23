@@ -18,7 +18,8 @@ export async function POST(req: NextRequest) {
         username:user_name,
         password:password
       });
-    console.log(resp)
+
+    // console.log(resp.data)
     return NextResponse.json({ success: true, data:resp.data });
   } catch (error: any) {
     console.error("Error", error.message);

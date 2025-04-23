@@ -299,6 +299,11 @@ def Storage(data:User):
             media= []
             mediaType= []
             capacity= []
+            val = response.dict["Members"]
+        
+            if(val ==[]):
+                return (val)
+            # return (response.dict["Members"])
             for murl in response.dict["Members"]:
                 resp = client.get(murl["@odata.id"])
                 for mul in resp.dict["Drives"]:
@@ -331,7 +336,7 @@ def Storage(data:User):
                 Controllers.append({"Model":respons.dict["Model"], "Status":respons.dict["Status"]})  
             ControllerCount.append(len(Controllers))
                 
-            # return (ControllerCount)
+            # return (DrivesCount)
             # for murl in response.dict["Members"]:
             #     resp = client.get(murl["@odata.id"])
             #     # return(resp.dict)

@@ -103,7 +103,7 @@ export default function Home() {
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
-      {loading && (
+      {!ipClciked && loading && (
         <div className="text-center mt-20 ml-30">
           <FiLoader size={40} />
         </div>

@@ -73,6 +73,7 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
   };
 
   const reloadWithIp = (ip: string, username: string, password: string) => {
+    setShowSidebar(false)
     setCurrentIp(ip);
     setCurrentUser(username);
     setCurrentPass(password);
@@ -97,6 +98,9 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
+      
+      <h1 className="text-center align-item mt-5 font-bold ml-16 text-green-800 text-2xl">{currentIp}</h1>
+
       {/* Sidebar */}
       {showSidebar && (
         <div style={styles.sidebar}>
