@@ -53,7 +53,7 @@ const Display: React.FC<PageProps> = ({ip, username, password}) => {
 
     return (
       <>
-      <NavBar/>
+      {/* <NavBar/> */}
         <Box sx={{ mt:12, p: 3, width: "100%", overflowX: "hidden" }}>
             <Grid container spacing={3} justifyContent="center" alignItems="stretch">
                 {loading.summary && summary && (

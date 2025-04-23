@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     const userId = body.userId;
 
     const exisIp = await Sut.findOne({userId: userId});
-
+    console.log(exisIp)
     if(exisIp){
        if(!exisIp.sut.includes(ip)){
         exisIp.sut.push({ip:ip, username:username, password:password});
