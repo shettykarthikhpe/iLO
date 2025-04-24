@@ -253,7 +253,7 @@ const styles: { [key: string]: React.CSSProperties } = {
  left: 0,
  height: "100vh",
  width: "300px",
- backgroundColor: "#fff",
+ backgroundColor: "#0f3555",
  borderRight: "1px solid #ddd",
  padding: "80px 20px 20px",
  display: "flex",
@@ -264,7 +264,7 @@ const styles: { [key: string]: React.CSSProperties } = {
  sidebarTitle: {
  fontSize: "1.5rem",
  fontWeight: "bold",
- color: "#333",
+ color: "white",
  borderBottom: "1px solid #eee",
  paddingBottom: "10px",
  },

@@ -143,7 +143,7 @@ export default function Home() {
                     variant="destructive"
                     size="icon"
                     onClick={() => removeIp(index)}
-                  >X</Button>
+                  >x</Button>
                   <Button
                     className="ml-2"
                     variant="secondary"
