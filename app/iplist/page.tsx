@@ -116,11 +116,17 @@ export default function Home() {
               <MenuIcon />
             </Button>
           </div>
+          
 
           {/* Sidebar */}
           {showSidebar && (
             <div style={styles.sidebar}>
-              <h2 style={styles.sidebarTitle}></h2>
+              <div style={{ position: "absolute", top: 20, left: 20 }}>
+              <Button onClick={() => setShowSidebar(!showSidebar)}>
+                <MenuIcon />
+              </Button>
+             </div>
+              <h2 style={styles.sidebarTitle}>IP List</h2>
               {ipList.map((ip:any, index) => (
                 <div key={index} style={styles.ipItem}>
                   <input
@@ -137,7 +143,7 @@ export default function Home() {
                     variant="destructive"
                     size="icon"
                     onClick={() => removeIp(index)}
-                  ></Button>
+                  >X</Button>
                   <Button
                     className="ml-2"
                     variant="secondary"
