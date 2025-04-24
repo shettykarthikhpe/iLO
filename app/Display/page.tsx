@@ -1,7 +1,7 @@
-"use client"
+"use client";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Grid, Box, Button } from "@mui/material";
+import { Grid, Box, Button, Avatar } from "@mui/material";
 import { Menu as MenuIcon, ArrowForward } from "@mui/icons-material";
 import { FiLoader } from "react-icons/fi";
 
@@ -26,9 +26,19 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
   const [currentUser, setCurrentUser] = useState(username);
   const [currentPass, setCurrentPass] = useState(password);
   const [loading, setLoading] = useState({
-    summary: false, processor: false, memory: false,
-    device: false, storage: false, network: false
+    summary: false,
+    processor: false,
+    memory: false,
+    device: false,
+    storage: false,
+    network: false,
   });
+
+  //— Add IP dialog state
+  const [showDialog, setShowDialog] = useState(false);
+  const [newIp, setNewIp] = useState("");
+  const [newUser, setNewUser] = useState("");
+  const [newPass, setNewPass] = useState("");
 
   const [processor, setProcessor] = useState<any>([]);
   const [summary, setSummary] = useState<any>([]);
@@ -42,6 +52,7 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
     if (tok) setToken(tok);
   };
 
+  //— Fetch the IP list from your API
   const getIp = async () => {
     try {
       const response = await axios.post("/api/getSut", {
@@ -55,6 +66,40 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
     }
   };
 
+  //— Add IP to the backend and update local state
+  const handleAddIp = async () => {
+    if (!newIp || !newUser || !newPass) return alert("Fill all fields");
+    try {
+      const res = await axios.post("/api/addSut", {
+        userId: token,
+        ip: newIp,
+        username: newUser,
+        password: newPass,
+      });
+      if (res.data.success) {
+        setIpList((prev) => [
+          ...prev,
+          { ip: newIp, username: newUser, password: newPass },
+        ]);
+        setNewIp("");
+        setNewUser("");
+        setNewPass("");
+        setShowDialog(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  //— Reload your display with a new IP
+  const reloadWithIp = (ip: string, username: string, password: string) => {
+    setShowSidebar(false);
+    setCurrentIp(ip);
+    setCurrentUser(username);
+    setCurrentPass(password);
+  };
+
+  //— Fetch data for all cards
   const fetchData = async (
     endpoint: string,
     data: { username: string; ip: string; password: string },
@@ -72,100 +117,175 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
     }
   };
 
-  const reloadWithIp = (ip: string, username: string, password: string) => {
-    setShowSidebar(false)
-    setCurrentIp(ip);
-    setCurrentUser(username);
-    setCurrentPass(password);
-  };
-
   useEffect(() => {
     tokenGetter();
   }, []);
-
   useEffect(() => {
     if (token) getIp();
   }, [token]);
-
   useEffect(() => {
-    fetchData("processor", { username: currentUser, ip: currentIp, password: currentPass }, setProcessor, "processor");
-    fetchData("device", { username: currentUser, ip: currentIp, password: currentPass }, setDevice, "device");
-    fetchData("summary", { username: currentUser, ip: currentIp, password: currentPass }, setSummary, "summary");
-    fetchData("memory", { username: currentUser, ip: currentIp, password: currentPass }, setMemory, "memory");
-    fetchData("network", { username: currentUser, ip: currentIp, password: currentPass }, setNetwork, "network");
-    fetchData("storage", { username: currentUser, ip: currentIp, password: currentPass }, setStorage, "storage");
+    fetchData(
+      "processor",
+      { username: currentUser, ip: currentIp, password: currentPass },
+      setProcessor,
+      "processor"
+    );
+    fetchData(
+      "device",
+      { username: currentUser, ip: currentIp, password: currentPass },
+      setDevice,
+      "device"
+    );
+    fetchData(
+      "summary",
+      { username: currentUser, ip: currentIp, password: currentPass },
+      setSummary,
+      "summary"
+    );
+    fetchData(
+      "memory",
+      { username: currentUser, ip: currentIp, password: currentPass },
+      setMemory,
+      "memory"
+    );
+    fetchData(
+      "network",
+      { username: currentUser, ip: currentIp, password: currentPass },
+      setNetwork,
+      "network"
+    );
+    fetchData(
+      "storage",
+      { username: currentUser, ip: currentIp, password: currentPass },
+      setStorage,
+      "storage"
+    );
   }, [currentIp, currentUser, currentPass]);
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
-      
-      <h1 className="text-center align-item mt-5 font-bold ml-16 text-green-800 text-2xl">{currentIp}</h1>
+      <h1 className="text-center mt-5 ml-16 font-bold text-green-800 text-2xl">
+        {currentIp}
+      </h1>
 
       {/* Sidebar */}
       {showSidebar && (
         <div style={styles.sidebar}>
-          <h3 style={styles.sidebarTitle}> IP list</h3>
-          {ipList.map((item, index) => (
-            <div key={index} style={styles.ipItem}>
+          <div className="flex-items-center">
+            <Button onClick={() => window.location.reload()}>
+              <Avatar src="/iLOlogo.png" sx={{ width: 60, height: 60 }} />{" "}
+              <h3 style={styles.sidebarTitle}>IP List</h3>
+            </Button>
+          </div>
+          {ipList.map((item, idx) => (
+            <div key={idx} style={styles.ipItem}>
               <span>{item.ip}</span>
               <Button
                 size="small"
-                onClick={() => reloadWithIp(item.ip, item.username, item.password)}
+                onClick={() =>
+                  reloadWithIp(item.ip, item.username, item.password)
+                }
               >
                 <ArrowForward />
               </Button>
             </div>
           ))}
+
+          {/* Add IP Button */}
+          <div style={styles.sidebarButtons}>
+            {ipList.length < 5 && (
+              <Button onClick={() => setShowDialog(true)}>+ Add IP</Button>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Sidebar toggle */}
+      {/* Sidebar Toggle */}
       <div style={styles.menuButtonWrapper}>
         <Button onClick={() => setShowSidebar(!showSidebar)}>
           <MenuIcon />
         </Button>
       </div>
 
-      {/* Content */}
+      {/* Main Content */}
       <Box sx={{ mt: 12, p: 3, width: "100%", overflowX: "hidden" }}>
-        <Grid container spacing={3} justifyContent="center" alignItems="stretch">
-          {/* {!Object.values(loading).every(Boolean) && (
+        <Grid
+          container
+          spacing={3}
+          justifyContent="center"
+          alignItems="stretch"
+        >
+          {!Object.values(loading).every(Boolean) && (
             <Grid item xs={12} style={{ textAlign: "center" }}>
-              
+              <FiLoader size={40} />
             </Grid>
-          )} */}
-          
+          )}
+          {loading.summary && summary.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              {!loading.summary && <FiLoader size={40} />}
-              {loading.summary && summary && summary.length > 0 &&<SummaryCard data={summary} />}
+              <SummaryCard data={summary} />
             </Grid>
-
+          )}
+          {loading.memory && memory.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              {!loading.memory && <FiLoader size={40} />}
-              {loading.memory && memory && memory.length > 0 &&<MemoryCard data={memory} />}
+              <MemoryCard data={memory} />
             </Grid>
-
+          )}
+          {loading.device && device.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              {!loading.device && <FiLoader size={40} />}
-              {loading.device && device && device.length > 0 &&<DeviceCard data={device} />}
+              <DeviceCard data={device} />
             </Grid>
-
+          )}
+          {loading.processor && processor.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              {!loading.processor && <FiLoader size={40} />}
-              {loading.processor && processor && processor.length > 0 &&<ProcessorCard data={processor} />}
+              <ProcessorCard data={processor} />
             </Grid>
-
+          )}
+          {loading.network && network.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              {!loading.network && <FiLoader size={40} />}
-              {loading.network && network && network.length > 0 &&<NetworkSummaryCard rawData={network} />}
+              <NetworkSummaryCard rawData={network} />
             </Grid>
-            
+          )}
+          {loading.storage && storage.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              {!loading.storage && <FiLoader size={40} />}
-              {loading.storage && storage && storage.length > 0 &&<StorageSummaryCard rawData={storage} />}
+              <StorageSummaryCard rawData={storage} />
             </Grid>
+          )}
         </Grid>
       </Box>
+
+      {/* Add IP Dialog */}
+      {showDialog && (
+        <div style={styles.modalBackdrop}>
+          <div style={styles.modalBox}>
+            <h3>Add New IP</h3>
+            <input
+              placeholder="IP Address"
+              value={newIp}
+              onChange={(e) => setNewIp(e.target.value)}
+              style={styles.input}
+            />
+            <input
+              placeholder="Username"
+              value={newUser}
+              onChange={(e) => setNewUser(e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={newPass}
+              onChange={(e) => setNewPass(e.target.value)}
+              style={styles.input}
+            />
+            <div style={styles.dialogButtons}>
+              <Button variant="outline" onClick={() => setShowDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleAddIp}>Add</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -178,20 +298,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     top: 0,
     left: 0,
     height: "100vh",
-    width: "280px",
-    backgroundColor: "#ffffff",
+    width: "300px",
+    backgroundColor: "#fff",
     borderRight: "1px solid #ddd",
     padding: "80px 20px 20px",
     display: "flex",
     flexDirection: "column",
     gap: "15px",
-    boxShadow: "2px 0 5px rgba(0, 0, 0, 0.1)",
-    zIndex: 100,
+    boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
   },
   sidebarTitle: {
-    fontSize: "1.25rem",
+    fontSize: "1.5rem",
     fontWeight: "bold",
     color: "#333",
+    borderBottom: "1px solid #eee",
+    paddingBottom: "10px",
   },
   ipItem: {
     display: "flex",
@@ -201,10 +322,42 @@ const styles: { [key: string]: React.CSSProperties } = {
     background: "#f5f5f5",
     borderRadius: "6px",
   },
+  sidebarButtons: {
+    marginTop: "auto",
+    display: "flex",
+    justifyContent: "center",
+  },
   menuButtonWrapper: {
     position: "fixed",
     top: "20px",
     left: "20px",
     zIndex: 200,
+  },
+  modalBackdrop: {
+    position: "fixed",
+    inset: 0,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalBox: {
+    backgroundColor: "#fff",
+    padding: "20px",
+    borderRadius: "10px",
+    width: "300px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+  },
+  input: {
+    padding: "8px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+  },
+  dialogButtons: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "10px",
   },
 };
