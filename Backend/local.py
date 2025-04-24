@@ -25,63 +25,63 @@ import redfish
 #     # writing the data rows
 #     csvwriter.writerows(datas)
 
-import openpyxl
-import csv
-import os
+# import openpyxl
+# import csv
+# import os
 
-def file_converter(file_name):
-	file_extension = os.path.splitext(file_name)[1]
-	file_original_name = os.path.splitext(file_name)[0]
-	if(file_extension == '.xlsx'):
-		# Load the Excel file
-		wb = openpyxl.load_workbook(f'../uploads/{file_original_name}.xlsx')
-		sheet = wb.active
+# def file_converter(file_name):
+# 	file_extension = os.path.splitext(file_name)[1]
+# 	file_original_name = os.path.splitext(file_name)[0]
+# 	if(file_extension == '.xlsx'):
+# 		# Load the Excel file
+# 		wb = openpyxl.load_workbook(f'../uploads/{file_original_name}.xlsx')
+# 		sheet = wb.active
 
-		# Open a CSV file to write
-		with open(f'../csv/{file_original_name}.csv', 'w', newline="") as f:
-			c = csv.writer(f)
+# 		# Open a CSV file to write
+# 		with open(f'../csv/{file_original_name}.csv', 'w', newline="") as f:
+# 			c = csv.writer(f)
 
-			# Write the rows from the Excel sheet to the CSV file
-			for row in sheet.iter_rows(values_only=True):
-				c.writerow(row)
-	else:
-		print("proper csv")
+# 			# Write the rows from the Excel sheet to the CSV file
+# 			for row in sheet.iter_rows(values_only=True):
+# 				c.writerow(row)
+# 	else:
+# 		print("proper csv")
 
-# function to geth the drive list
-Drives= []
-def DriveGetter():
-    url = "10.132.147.215"
-    username = "Administrator"
-    password = "GXJYN722"
-    # Create a Redfish client object and connect to the API
-    client = redfish.redfish_client(base_url=url, username=username, password=password)
-    try:
-        client.login(auth=redfish.AuthMethod.SESSION)
-        # Perform some tasks using the Redfish API
-        response = client.get('/redfish/v1/Systems/1/Storage/')
-        if response.status == 200:
-            for murl in response.dict["Members"]:
-                resp = client.get(murl["@odata.id"])
-                for mul in resp.dict["Drives"]:
-                    re= client.get(mul["@odata.id"])
-                    Drives.append(re.dict['SerialNumber'])
-            return ([Drives])
-        else:
-            return ([])
-    except Exception as e:
-         return ([])
+# # function to geth the drive list
+# Drives= []
+# def DriveGetter():
+#     url = "10.132.147.215"
+#     username = "Administrator"
+#     password = "GXJYN722"
+#     # Create a Redfish client object and connect to the API
+#     client = redfish.redfish_client(base_url=url, username=username, password=password)
+#     try:
+#         client.login(auth=redfish.AuthMethod.SESSION)
+#         # Perform some tasks using the Redfish API
+#         response = client.get('/redfish/v1/Systems/1/Storage/')
+#         if response.status == 200:
+#             for murl in response.dict["Members"]:
+#                 resp = client.get(murl["@odata.id"])
+#                 for mul in resp.dict["Drives"]:
+#                     re= client.get(mul["@odata.id"])
+#                     Drives.append(re.dict['SerialNumber'])
+#             return ([Drives])
+#         else:
+#             return ([])
+#     except Exception as e:
+#          return ([])
 
 
-filename = "../uploads/iLO_OC_Accessories_Inventory_sheet.csv"
-df = pd.read_csv(filename, encoding="ISO-8859-1")
+# filename = "../uploads/iLO_OC_Accessories_Inventory_sheet.csv"
+# df = pd.read_csv(filename, encoding="ISO-8859-1")
 
-ActualDrives= DriveGetter()
-drive_str_no = df[df['Type'].str.lower()=='drive' ]['SR no']
-# print(drive_str_no.isin(ActualDrives))
-# print(drive_str_no)
-matchedDrives= []
-matched = drive_str_no[drive_str_no.isin(ActualDrives[0])]
-print("macthed are",matched)
+# ActualDrives= DriveGetter()
+# drive_str_no = df[df['Type'].str.lower()=='drive' ]['SR no']
+# # print(drive_str_no.isin(ActualDrives))
+# # print(drive_str_no)
+# matchedDrives= []
+# matched = drive_str_no[drive_str_no.isin(ActualDrives[0])]
+# print("macthed are",matched)
 
 # for rows in df:
 #     if rows == 'Type':
@@ -103,3 +103,33 @@ print("macthed are",matched)
 # 				print(item)
         	# if item in ActualDrives:
             # 		print(df[rows])
+
+from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, File, UploadFile
+
+app = FastAPI()
+ 
+class User(BaseModel):
+    url: str
+    username: str
+    password: str
+ 
+
+@app.post('/local')
+def Local(data:User):
+    url = data.url
+    username = data.username
+    password = data.password
+
+    client = redfish.redfish_client(base_url=url, username=username, password=password)
+    # Attempt to login with a timeout of 10 seconds
+    try:
+        client.login(auth=redfish.AuthMethod.SESSION)
+        # Perform some tasks using the Redfish API
+        response = client.get('/redfish/v1/Systems/1/Memory/proc1dimm1')
+        if response.status == 200:
+            # return(response.dict['Oem']['Hpe']['PartNumber'])
+            return(response.dict)
+    except Exception as e:
+        return ({"error": e})
+   
