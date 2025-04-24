@@ -109,27 +109,43 @@ from fastapi import FastAPI, HTTPException, File, UploadFile
 
 app = FastAPI()
  
-class User(BaseModel):
-    url: str
-    username: str
-    password: str
- 
+class IP(BaseModel):
+    partNumber: str
 
+from pymongo import MongoClient
+
+# Create a connection to the MongoDB server
+client = MongoClient("mongodb+srv://abhishekdrai85:Abhishek29@cluster0.4kjtl.mongodb.net/hp?retryWrites=true&w=majority&appName=Cluster0")
+
+# Access a specific database
+db = client["hp"]
+
+# Access a specific collection within the database
+collection = db["suts"]
+
+processorSet= []
+result =[]
 @app.post('/local')
-def Local(data:User):
-    url = data.url
-    username = data.username
-    password = data.password
-
-    client = redfish.redfish_client(base_url=url, username=username, password=password)
-    # Attempt to login with a timeout of 10 seconds
-    try:
-        client.login(auth=redfish.AuthMethod.SESSION)
-        # Perform some tasks using the Redfish API
-        response = client.get('/redfish/v1/Systems/1/Memory/proc1dimm1')
-        if response.status == 200:
-            # return(response.dict['Oem']['Hpe']['PartNumber'])
-            return(response.dict)
-    except Exception as e:
-        return ({"error": e})
-   
+def Local(data:IP):
+    partNumber = data.partNumber
+    print(partNumber)
+    ipLists = collection.find_one({'userId':"85oiv2tqz4"})
+    for listItem in ipLists['sut']:
+        client = redfish.redfish_client(base_url=listItem['ip'], username=listItem['username'], password=listItem['password'])
+        # Attempt to login with a timeout of 10 seconds
+        try:
+            client.login(auth=redfish.AuthMethod.SESSION)
+            # Perform some tasks using the Redfish API
+            # response = client.get('/redfish/v1/Systems/1/Memory/proc1dimm1')
+            response = client.get("/redfish/v1/Systems/1/Memory")
+            
+            if response.status == 200:
+                processorSet.append(response.dict['Members'])
+                for item in processorSet[0]:
+                    resp = client.get(item['@odata.id'])
+                    # print( == resp.dict['Oem']['Hpe']['PartNumber'])
+                    if (str(partNumber) == resp.dict['Oem']['Hpe']['PartNumber']):
+                        result.append(listItem['ip'])
+        except Exception as e:
+            return ({ "error": e })
+    return (result)

@@ -129,41 +129,41 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
       {/* Content */}
       <Box sx={{ mt: 12, p: 3, width: "100%", overflowX: "hidden" }}>
         <Grid container spacing={3} justifyContent="center" alignItems="stretch">
-          {!Object.values(loading).every(Boolean) && (
+          {/* {!Object.values(loading).every(Boolean) && (
             <Grid item xs={12} style={{ textAlign: "center" }}>
-              <FiLoader size={40} />
+              
             </Grid>
-          )}
-          {loading.summary && summary && summary.length > 0 && (
+          )} */}
+          
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              <SummaryCard data={summary} />
+              {!loading.summary && <FiLoader size={40} />}
+              {loading.summary && summary && summary.length > 0 &&<SummaryCard data={summary} />}
             </Grid>
-          )}
-          {loading.memory && memory && memory.length > 0 &&  (
+
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              <MemoryCard data={memory} />
+              {!loading.memory && <FiLoader size={40} />}
+              {loading.memory && memory && memory.length > 0 &&<MemoryCard data={memory} />}
             </Grid>
-          )}
-          {loading.device && device && device.length > 0 && (
+
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              <DeviceCard data={device} />
+              {!loading.device && <FiLoader size={40} />}
+              {loading.device && device && device.length > 0 &&<DeviceCard data={device} />}
             </Grid>
-          )}
-          {loading.processor && processor && processor.length > 0 && (
+
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              <ProcessorCard data={processor} />
+              {!loading.processor && <FiLoader size={40} />}
+              {loading.processor && processor && processor.length > 0 &&<ProcessorCard data={processor} />}
             </Grid>
-          )}
-          {loading.network && network && network.length > 0 && (
+
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              <NetworkSummaryCard rawData={network} />
+              {!loading.network && <FiLoader size={40} />}
+              {loading.network && network && network.length > 0 &&<NetworkSummaryCard rawData={network} />}
             </Grid>
-          )}
-          {loading.storage && storage && storage.length > 0 && (
+            
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              <StorageSummaryCard rawData={storage} />
+              {!loading.storage && <FiLoader size={40} />}
+              {loading.storage && storage && storage.length > 0 &&<StorageSummaryCard rawData={storage} />}
             </Grid>
-          )}
         </Grid>
       </Box>
     </div>
