@@ -1,3 +1,5 @@
+
+
 import React, { useState, useMemo } from "react";
 import {
   Box,
@@ -14,20 +16,20 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Skeleton,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import WarningIcon from "@mui/icons-material/Warning";
 
-// Define the expected structure of the raw network data
 interface RawNetworkData {
   Model?: string[];
   Location?: string[];
   Firmware?: string[];
-  Status?: Array<{ State?: string; HealthRollup?: string; Health?: string }>;
+  State?: string[];
+  Health?: string[];
 }
 
-// Our internal NetworkItem format
 interface NetworkItem {
   Model: string;
   Location: string;
@@ -36,68 +38,40 @@ interface NetworkItem {
   Health: string;
 }
 
-// Utility function to return an icon based on health status
 const getHealthIcon = (health?: string) => {
   if (!health) return null;
-  if (health === "OK") {
-    return <CheckCircleIcon sx={{ color: "#17eba0", fontSize: 18 }} />;
-  } else if (health === "Critical") {
-    return <ErrorIcon sx={{ color: "red", fontSize: 18 }} />;
-  } else if (health === "Warning") {
-    return <WarningIcon sx={{ color: "orange", fontSize: 18 }} />;
-  }
+  if (health === "OK") return <CheckCircleIcon sx={{ color: "#17eba0", fontSize: 18 }} />;
+  if (health === "Critical") return <ErrorIcon sx={{ color: "red", fontSize: 18 }} />;
+  if (health === "Warning") return <WarningIcon sx={{ color: "orange", fontSize: 18 }} />;
   return null;
 };
 
-const NetworkSummaryCard: React.FC<{ rawData?: RawNetworkData }> = ({ rawData }) => {
+const NetworkSummaryCard: React.FC<{ rawData?: RawNetworkData; loading: boolean }> = ({ rawData, loading }) => {
   const [open, setOpen] = useState(false);
 
-  // Transform raw network data into a structured format
   const networkItems: NetworkItem[] = useMemo(() => {
-    console.log("Raw Network Data:", rawData);
-
-    // Ensure rawData is an array and extract the first object
-    const data = Array.isArray(rawData) && rawData.length > 0 ? rawData[0] : rawData;
-
-    console.log("Extracted Data:", data);
-
-    if (!data || !data.Model || !data.Location || !data.Firmware || !data.State || !data.Health) {
-        console.log("Invalid extracted data structure.");
-        return [];
+    if (loading || !rawData || !rawData.Model || !rawData.Location || !rawData.Firmware || !rawData.State || !rawData.Health) {
+      return [];
     }
 
     const count = Math.min(
-        data.Model.length,
-        data.Location.length,
-        data.Firmware.length,
-        data.State.length,
-        data.Health.length
+      rawData.Model.length,
+      rawData.Location.length,
+      rawData.Firmware.length,
+      rawData.State.length,
+      rawData.Health.length
     );
 
-    console.log("Computed Count:", count);
-
-    if (count === 0) {
-        console.log("All extracted arrays have length 0.");
-        return [];
-    }
-
-    const processedItems = Array.from({ length: count }, (_, i) => ({
-        Model: data.Model[i] || "Unknown",
-        Location: data.Location[i] || "Unknown",
-        Firmware: data.Firmware[i] || "Unknown",
-        State: data.State[i] || "Unknown",
-        Health: data.Health[i] || "Unknown",
+    return Array.from({ length: count }, (_, i) => ({
+      Model: rawData.Model![i] || "Unknown",
+      Location: rawData.Location![i] || "Unknown",
+      Firmware: rawData.Firmware![i] || "Unknown",
+      State: rawData.State![i] || "Unknown",
+      Health: rawData.Health![i] || "Unknown",
     }));
+  }, [rawData, loading]);
 
-    console.log("Processed Network Items:", processedItems);
-
-    return processedItems;
-}, [rawData]);
-
-
-   // Debugging line
-
-  const compactView = networkItems.slice(0, 3); // Show only the first 3 rows in the main card
+  const compactView = networkItems.slice(0, 3);
 
   return (
     <>
@@ -120,33 +94,51 @@ const NetworkSummaryCard: React.FC<{ rawData?: RawNetworkData }> = ({ rawData })
           Network Summary
         </Typography>
         <Box sx={{ flexGrow: 1, overflowY: "auto" }}>
-          {compactView.length > 0 ? (
-            compactView.map((item, idx) => (
-              <Box
-                key={idx}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  mb: 0.5,
-                }}
-              >
-                <Typography variant="body2" sx={{ flexGrow: 1 }}>
-                  {item.Model}
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  {getHealthIcon(item.Health)}
-                  <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                    {item.Health}
-                  </Typography>
+          {loading
+            ? Array.from({ length: 3 }).map((_, idx) => (
+                <Box
+                  key={idx}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    mb: 0.5,
+                  }}
+                >
+                  <Skeleton variant="text" width={120} height={20} />
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Skeleton variant="circular" width={18} height={18} />
+                    <Skeleton variant="text" width={50} height={20} />
+                  </Box>
                 </Box>
-              </Box>
-            ))
-          ) : (
-            <Typography variant="body2" color="textSecondary">
-              No network data available.
-            </Typography>
-          )}
+              ))
+            : compactView.length > 0
+              ? compactView.map((item, idx) => (
+                  <Box
+                    key={idx}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mb: 0.5,
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ flexGrow: 1 }}>
+                      {item.Model}
+                    </Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      {getHealthIcon(item.Health)}
+                      <Typography variant="body2" sx={{ fontWeight: "bold" }}>
+                        {item.Health}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ))
+              : (
+                <Typography variant="body2" color="textSecondary">
+                  No network data available.
+                </Typography>
+              )}
         </Box>
       </Paper>
 
@@ -166,26 +158,41 @@ const NetworkSummaryCard: React.FC<{ rawData?: RawNetworkData }> = ({ rawData })
                 </TableRow>
               </TableHead>
               <TableBody>
-                {networkItems.length > 0 ? (
-                  networkItems.map((item, idx) => (
-                    <TableRow key={idx}>
-                      <TableCell>{item.Model}</TableCell>
-                      <TableCell>{item.Location}</TableCell>
-                      <TableCell>{item.Firmware}</TableCell>
-                      <TableCell>{item.State}</TableCell>
-                      <TableCell sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        {getHealthIcon(item.Health)}
-                        {item.Health}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      No network data available.
-                    </TableCell>
-                  </TableRow>
-                )}
+                {loading
+                  ? Array.from({ length: 3 }).map((_, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell><Skeleton variant="text" width={80} /></TableCell>
+                        <TableCell><Skeleton variant="text" width={80} /></TableCell>
+                        <TableCell><Skeleton variant="text" width={80} /></TableCell>
+                        <TableCell><Skeleton variant="text" width={60} /></TableCell>
+                        <TableCell>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Skeleton variant="circular" width={18} height={18} />
+                            <Skeleton variant="text" width={50} />
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  : networkItems.length > 0
+                    ? networkItems.map((item, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell>{item.Model}</TableCell>
+                          <TableCell>{item.Location}</TableCell>
+                          <TableCell>{item.Firmware}</TableCell>
+                          <TableCell>{item.State}</TableCell>
+                          <TableCell sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            {getHealthIcon(item.Health)}
+                            {item.Health}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    : (
+                      <TableRow>
+                        <TableCell colSpan={5} align="center">
+                          No network data available.
+                        </TableCell>
+                      </TableRow>
+                    )}
               </TableBody>
             </Table>
           </TableContainer>

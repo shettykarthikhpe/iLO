@@ -1,22 +1,19 @@
-
-
-
 import React, { useState } from "react";
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions, 
-  Button 
+import {
+  Box,
+  Typography,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  CircularProgress,
 } from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorIcon from "@mui/icons-material/Error";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-// Define TypeScript interfaces for clarity.
 interface ProcessorStatus {
   Health: string;
   State: string;
@@ -33,10 +30,9 @@ interface ProcessorData {
 }
 
 interface ProcessorCardProps {
-  data: ProcessorData[];
+  data?: ProcessorData[]; // now optional for safety
 }
 
-// Utility function to return an icon based on a status string.
 const getStatusIcon = (status: string) => {
   switch (status?.toLowerCase()) {
     case "ok":
@@ -56,27 +52,46 @@ const getStatusIcon = (status: string) => {
 const ProcessorCard: React.FC<ProcessorCardProps> = ({ data }) => {
   const [open, setOpen] = useState(false);
 
-  // Limit to 2 processors (Prevent duplicates)
-  const processors = data.slice(0, 2);
+  if (!data) {
+    return (
+      <Paper elevation={3} sx={{ padding: "20px", borderRadius: "12px", textAlign: "center" }}>
+        <CircularProgress />
+        <Typography variant="body2" sx={{ mt: 1 }}>
+          Loading processor data...
+        </Typography>
+      </Paper>
+    );
+  }
 
-  // Debugging logs
-  console.log("Processor Data:", processors);
+  if (!Array.isArray(data) || data.length === 0) {
+    return (
+      <Paper elevation={3} sx={{ padding: "20px", borderRadius: "12px" }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          Processors
+        </Typography>
+        <Typography variant="body2" color="textSecondary">
+          No processor data available.
+        </Typography>
+      </Paper>
+    );
+  }
+
+  const processors = data.slice(0, 2);
 
   return (
     <>
-      {/* Main Compact Card */}
       <Paper
         elevation={3}
         sx={{
           width: "100%",
-          minHeight: "100%", 
+          minHeight: "100%",
           borderRadius: "12px",
           padding: "20px",
           display: "flex",
           flexDirection: "column",
           cursor: "pointer",
         }}
-        onClick={() => setOpen(true)} 
+        onClick={() => setOpen(true)}
       >
         <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
           Processors
@@ -95,7 +110,6 @@ const ProcessorCard: React.FC<ProcessorCardProps> = ({ data }) => {
         ))}
       </Paper>
 
-      {/* Dialog Box for Full Details */}
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Processor Details</DialogTitle>
         <DialogContent dividers>
@@ -104,7 +118,7 @@ const ProcessorCard: React.FC<ProcessorCardProps> = ({ data }) => {
               <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
                 {proc.Name}
               </Typography>
-              
+
               <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
                 <Typography variant="body2">Health:</Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -143,7 +157,6 @@ const ProcessorCard: React.FC<ProcessorCardProps> = ({ data }) => {
                 </Typography>
               </Box>
 
-              {/* Cache Information */}
               {proc.Cache.map((cacheEntry, idx) => (
                 <Box key={idx} sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                   <Typography variant="body2">{cacheEntry[1]}:</Typography>
@@ -165,4 +178,3 @@ const ProcessorCard: React.FC<ProcessorCardProps> = ({ data }) => {
 };
 
 export default ProcessorCard;
-

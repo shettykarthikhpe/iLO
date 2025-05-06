@@ -1,15 +1,17 @@
 
 
+
 import React, { useState } from "react";
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions, 
-  Button 
+import {
+  Box,
+  Typography,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  CircularProgress,
 } from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -26,10 +28,9 @@ interface SummaryData {
 }
 
 interface SummaryCardProps {
-  data: SummaryData[];
+  data?: SummaryData[];
 }
 
-// Utility function to return an icon based on status
 const getStatusIcon = (status: string) => {
   switch (status?.toLowerCase()) {
     case "ok":
@@ -49,14 +50,35 @@ const getStatusIcon = (status: string) => {
 const SummaryCard: React.FC<SummaryCardProps> = ({ data }) => {
   const [open, setOpen] = useState(false);
 
+  if (!data) {
+    return (
+      <Paper elevation={3} sx={{ padding: "20px", borderRadius: "12px", textAlign: "center" }}>
+        <CircularProgress />
+        <Typography variant="body2" sx={{ mt: 1 }}>
+          Loading summary data...
+        </Typography>
+      </Paper>
+    );
+  }
+
+  if (!Array.isArray(data) || data.length === 0) {
+    return (
+      <Paper elevation={3} sx={{ padding: "20px", borderRadius: "12px" }}>
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+          Summary
+        </Typography>
+        <Typography variant="body2" color="textSecondary">
+          No summary data available.
+        </Typography>
+      </Paper>
+    );
+  }
+
   return (
     <>
       {data.map((item, index) => {
-        // Extract AMS data
-        const AMS = item.Other && item.Other.length > 0 ? item.Other[0].AMS : {};
+        const AMS = item.Other?.[0]?.AMS || {};
         const amsKeys = Object.keys(AMS);
-        
-        // Limit to first 3-4 parts for main card
         const mainParts = amsKeys.slice(0, 4);
         const extraParts = amsKeys.slice(4);
 
@@ -73,7 +95,6 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data }) => {
             }}
             onClick={extraParts.length > 0 ? () => setOpen(true) : undefined}
           >
-            {/* Title & Model */}
             <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
               {item.Name}
             </Typography>
@@ -81,16 +102,12 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data }) => {
               Model: {item.Model}
             </Typography>
 
-            {/* Main Card Parts */}
             {mainParts.map((key, idx) => {
-              let value = AMS[key];
-              let displayValue = "";
-
-              if (typeof value === "object" && value.Status && value.Status.Health) {
-                displayValue = value.Status.Health;
-              } else {
-                displayValue = String(value);
-              }
+              const value = AMS[key];
+              const displayValue =
+                typeof value === "object" && value?.Status?.Health
+                  ? value.Status.Health
+                  : String(value);
 
               return (
                 <Box key={idx} sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
@@ -105,25 +122,23 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data }) => {
               );
             })}
 
-            {/* Indicate More Parts Exist */}
             {extraParts.length > 0 && (
-              <Typography 
-                variant="body2" 
-                sx={{ color: "blue", mt: 1, cursor: "pointer", fontWeight: "bold" }}
+              <Typography
+                variant="body2"
+                sx={{ color: "blue", mt: 1, fontWeight: "bold" }}
               >
-              ...
+                ...
               </Typography>
             )}
           </Paper>
         );
       })}
-      
-      {/* Full Details Dialog */}
+
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Full Summary Details</DialogTitle>
         <DialogContent dividers>
           {data.map((item, index) => {
-            const AMS = item.Other && item.Other.length > 0 ? item.Other[0].AMS : {};
+            const AMS = item.Other?.[0]?.AMS || {};
             const amsKeys = Object.keys(AMS);
 
             return (
@@ -136,14 +151,11 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data }) => {
                 </Typography>
 
                 {amsKeys.map((key, idx) => {
-                  let value = AMS[key];
-                  let displayValue = "";
-
-                  if (typeof value === "object" && value.Status && value.Status.Health) {
-                    displayValue = value.Status.Health;
-                  } else {
-                    displayValue = String(value);
-                  }
+                  const value = AMS[key];
+                  const displayValue =
+                    typeof value === "object" && value?.Status?.Health
+                      ? value.Status.Health
+                      : String(value);
 
                   return (
                     <Box key={idx} sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
@@ -171,4 +183,3 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data }) => {
 };
 
 export default SummaryCard;
-
