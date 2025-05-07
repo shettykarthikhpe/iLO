@@ -6,6 +6,8 @@ import openpyxl
 import os
 import csv
 import pandas as pd
+from pymongo import MongoClient
+
 
 app = FastAPI()
  
@@ -457,7 +459,6 @@ def DriveGetter():
             return ([])
     except Exception as e:
          return ([])
-   
      
 @app.post("/content")
 def getContent(data:File):
@@ -513,4 +514,108 @@ async def Tester(data: Tester):
             return ({"message": 'Failed to get health information', "success":True})
     except Exception as e:
          return ({"message":"Failed to get health information", "success":False})
+
+def file_converter(file_name):
+	file_extension = os.path.splitext(file_name)[1]
+	file_original_name = os.path.splitext(file_name)[0]
+	if(file_extension == '.xlsx'):
+		# Load the Excel file
+		wb = openpyxl.load_workbook(f'../uploads/{file_original_name}.xlsx')
+		sheet = wb.active
+
+		# Open a CSV file to write
+		with open(f'../csv/{file_original_name}.csv', 'w', newline="") as f:
+			c = csv.writer(f)
+
+			# Write the rows from the Excel sheet to the CSV file
+			for row in sheet.iter_rows(values_only=True):
+				c.writerow(row)
+	else:
+		print("proper csv") 
+
  
+class IP(BaseModel):
+    partNumber: str
+
+# Create a connection to the MongoDB server
+client = MongoClient("mongodb+srv://abhishekdrai85:Abhishek29@cluster0.4kjtl.mongodb.net/hp?retryWrites=true&w=majority&appName=Cluster0")
+
+# Access a specific database
+db = client["hp"]
+
+# Access a specific collection within the database
+collection = db["suts"]
+
+processorSet= []
+result =[]
+@app.post('/local')
+def Local(data:IP):
+    # print(data)
+    partNumber = data.partNumber
+    ipLists = collection.find_one({'userId':"85oiv2tqz4"})
+    for listItem in ipLists['sut']:
+        client = redfish.redfish_client(base_url=listItem['ip'], username=listItem['username'], password=listItem['password'])
+        # Attempt to login with a timeout of 10 seconds
+        try:
+            client.login(auth=redfish.AuthMethod.SESSION)
+            # Perform some tasks using the Redfish API
+            response = client.get('/redfish/v1/Chassis/1/Devices/?$expand=.')
+            if response.status == 200:
+                # return jsonify(response.dict)
+                members = response.dict.get('Members', [])
+                if not members:
+                    print("No data found")
+                    return
+            
+                for member in members:
+                    if (str(partNumber) == member['PartNumber']):
+                        result.append(listItem['ip'])
+            else:
+                print('Failed to get chassis information')
+        except requests.exceptions.Timeout:
+            return ({ "error": e })
+    return (result)
+
+class IP(BaseModel):
+    partNumber: str
+    filename:str
+
+class File(BaseModel):
+    filename:str
+
+def file_converter(file_name):
+	file_extension = os.path.splitext(file_name)[1]
+	file_original_name = os.path.splitext(file_name)[0]
+	if(file_extension == '.xlsx'):
+		# Load the Excel file
+		wb = openpyxl.load_workbook(f'../uploads/{file_original_name}.xlsx')
+		sheet = wb.active
+
+		# Open a CSV file to write
+		with open(f'../uploads/{file_original_name}.csv', 'w', newline="") as f:
+			c = csv.writer(f)
+
+			# Write the rows from the Excel sheet to the CSV file
+			for row in sheet.iter_rows(values_only=True):
+				c.writerow(row)
+	else:
+		print("proper csv")
+
+@app.post("/upload")
+def converter(data:File):
+    file_name = data.filename
+    file_converter(file_name)
+    print(file_name)
+
+@app.post('/localIn')
+def LocalIn(data:IP):
+    filename = f"../uploads/{data.filename}.csv"
+    df = pd.read_csv(filename, encoding="ISO-8859-1")
+    drive_str_no = df['Part number'] == data.partNumber
+    for item in drive_str_no:
+        if item == True:
+            return (True)
+    else:
+        return (False)
+    
+            

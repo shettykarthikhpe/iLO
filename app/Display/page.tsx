@@ -109,6 +109,7 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
     try {
       setLoading((prev) => ({ ...prev, [key]: false }));
       const response = await axios.post(`/api/${endpoint}`, { body: data });
+      console.log(`${endpoint} is `, response.data.data)
       setter(response.data.data);
       setLoading((prev) => ({ ...prev, [key]: true }));
     } catch (err) {
@@ -120,9 +121,11 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
   useEffect(() => {
     tokenGetter();
   }, []);
+  
   useEffect(() => {
     if (token) getIp();
   }, [token]);
+
   useEffect(() => {
     fetchData(
       "processor",
@@ -220,7 +223,7 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
               <FiLoader size={40} />
             </Grid>
           )}
-          {loading.summary && summary.length > 0 && (
+          {/* {loading.summary && summary.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
               <SummaryCard data={summary} />
             </Grid>
@@ -229,27 +232,27 @@ const Display: React.FC<PageProps> = ({ ip, username, password }) => {
             <Grid item xs={12} sm={6} md={4} lg={4}>
               <MemoryCard data={memory} />
             </Grid>
-          )}
+          )} */}
           {loading.device && device.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
               <DeviceCard data={device} />
             </Grid>
           )}
-          {loading.processor && processor.length > 0 && (
+          {/* {loading.processor && processor.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
               <ProcessorCard data={processor} />
             </Grid>
           )}
           {loading.network && network.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              <NetworkSummaryCard rawData={network} />
+              <NetworkSummaryCard rawData={network} loading={false} />
             </Grid>
           )}
           {loading.storage && storage.length > 0 && (
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              <StorageSummaryCard rawData={storage} />
+              <StorageSummaryCard data={storage} loading={false} />
             </Grid>
-          )}
+          )} */}
         </Grid>
       </Box>
 
@@ -360,4 +363,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: "space-between",
     marginTop: "10px",
   },
-};
+}; 

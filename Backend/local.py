@@ -153,7 +153,7 @@ def Local(data:IP):
                 processorSet.append(response.dict['Members'])
                 for item in processorSet[0]:
                     resp = client.get(item['@odata.id'])
-                    # print( == resp.dict['Oem']['Hpe']['PartNumber'])
+                    print(resp.dict['Oem']['Hpe']['PartNumber'])
                     if (str(partNumber) == resp.dict['Oem']['Hpe']['PartNumber']):
                         result.append(listItem['ip'])
         except Exception as e:

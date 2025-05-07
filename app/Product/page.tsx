@@ -30,6 +30,7 @@ const Product = () => {
         try {
             setLoading(prev => ({ ...prev, [key]: false }));
             const response = await axios.post(`/api/${endpoint}`,{body:data});
+            console.log(`${endpoint} is `, response.data.data)
             setter(response.data.data);
             setLoading(prev => ({ ...prev, [key]: true }));
         } catch (err) {
@@ -75,11 +76,11 @@ const Product = () => {
                         <SummaryCard data={summary} />
                     </Grid>
                 )}
-                {loading.memory && memory && (
+                {/* {loading.memory && memory && (
                     <Grid item xs={12} sm={6} md={4} lg={4}>
                         <MemoryCard data={memory} />
                     </Grid>
-                )}
+                )} */}
                 {loading.device && device && (
                     <Grid item xs={12} sm={6} md={4} lg={4}>
                         <DeviceCard data={device} />
@@ -92,12 +93,12 @@ const Product = () => {
                 )}
                 {loading.network && network && (
                     <Grid item xs={12} sm={6} md={4} lg={4}>
-                        <NetworkSummaryCard rawData={network} />
+                        <NetworkSummaryCard rawData={network} loading={false} />
                     </Grid>
                 )}
                 {loading.storage && storage && (
                     <Grid item xs={12} sm={6} md={4} lg={4}>
-                        <StorageSummaryCard data={storage} />
+                        <StorageSummaryCard data={storage} loading={false} />
                     </Grid>
                 )}
             </Grid>

@@ -1,31 +1,27 @@
-
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Paper,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  CircularProgress,
+import { 
+  Box, 
+  Typography, 
+  Paper, 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions, 
+  Button 
 } from "@mui/material";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorIcon from "@mui/icons-material/Error";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-
 // Define interface for device data
 interface DeviceData {
   data: string[][][];
 }
-
 interface DeviceCardProps {
-  data: DeviceData | null;
+  data: DeviceData;
 }
-
 // Utility function to return an icon based on device status
 const getStatusIcon = (status: string) => {
+  // const s = status.toLowerCase();
   if (status === "Enabled") {
     return <CheckCircleIcon sx={{ color: "#17eba0", fontSize: 18 }} />;
   } else if (status === "N/A") {
@@ -35,49 +31,24 @@ const getStatusIcon = (status: string) => {
   }
   return null;
 };
-
 const DeviceCard: React.FC<DeviceCardProps> = ({ data }) => {
-  const [open, setOpen] = useState(false);
-
-  // Loading check
-  const loading = !data || data.data.length === 0 || !data.data[0];
-
-  if (loading) {
-    return (
-      <Paper
-        elevation={3}
-        sx={{
-          width: "100%",
-          minHeight: "100%",
-          borderRadius: "12px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          p: 2,
-        }}
-      >
-        <CircularProgress />
-      </Paper>
-    );
-  }
-
   // Destructure columns from data
-  const deviceNames = data.data[0]; // Device type names
-  const deviceStatuses = data.data[1]; // Status (Enabled, Absent, etc.)
-  const healthStatuses = data.data[2]; // Health status (OK, N/A, etc.)
-  const productNames = data.data[3]; // Product names
-  const productVersions = data.data[4]; // Product versions
-  const componentIntegrity = data.data[5]; // Integrity status
-  const locations = data.data[6]; // Device location
-  const ids = data.data[7]; // Product IDs
-
+  const deviceNames = data && data.data[0]; // Device type names
+  const deviceStatuses = data && data.data[1]; // Status (Enabled, Absent, etc.)
+  const healthStatuses = data && data.data[2]; // Health status (OK, N/A, etc.)
+  const productNames = data && data.data[3]; // Product names
+  const productVersions = data && data.data[4]; // Product versions
+  const componentIntegrity = data && data.data[5]; // Integrity status
+  const locations = data && data.data[6]; // Device location
+  const ids = data && data.data[7]; // Product IDs
   // For the compact view, show only the first 3 rows.
   const compactRowsCount = 5;
   const compactRows = deviceNames.slice(0, compactRowsCount).map((device, idx) => ({
     name: device[0],
     status: deviceStatuses[idx] ? deviceStatuses[idx][0] : "",
   }));
-
+  // State for dialog open
+  const [open, setOpen] = useState(false);
   return (
     <>
       {/* Main Device Card (Compact View) */}
@@ -130,7 +101,6 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ data }) => {
           )}
         </Box>
       </Paper>
-
       {/* Dialog for Full Device Details */}
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="lg" fullWidth>
         <DialogTitle>Device Details</DialogTitle>
@@ -191,5 +161,10 @@ const DeviceCard: React.FC<DeviceCardProps> = ({ data }) => {
     </>
   );
 };
-
 export default DeviceCard;
+
+
+
+
+
+

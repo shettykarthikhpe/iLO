@@ -241,7 +241,8 @@ export default function Home() {
           </div>
         </div>}
       
-    { !contentLoader && removeFileUploader ? <>
+    { !contentLoader && removeFileUploader ? 
+      <>
       {!contentLoader && content && <span className="m-4 font-bold pb-12">Drives</span>}
       {!contentLoader && content &&  Object.values(content).map((value, index)=>{
         return (
