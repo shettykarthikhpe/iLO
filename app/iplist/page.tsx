@@ -11,6 +11,7 @@ import {
 } from "@mui/icons-material";
 import Display from "../Display/page";
 import { FiLoader } from "react-icons/fi";
+import Dummy from "../dummy/page";
 
 export default function Home() {
   const [ipList, setIpList] = useState<string[]>([]);
@@ -232,7 +233,7 @@ export default function Home() {
         </>
       )}
       {ipClciked && !loading && (
-        <Display ip={ip} username={username} password={password} />
+        <Dummy ip={ip} username={username} password={password} />
       )}
     </div>
   );
