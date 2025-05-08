@@ -177,7 +177,7 @@ const MemoryCard: React.FC<MemoryCardProps> = ({ data }) => {
  {pm.Size[idx]} GB
  </Typography>
  <Typography variant="body2" sx={{ flexBasis: "15%" }}>
- {pm.Frequency[idx]}
+ {pm.Frequency && pm.Frequency.length > idx ? pm.Frequency[idx] : "N/A"}
  </Typography>
  </Box>
  ))}
