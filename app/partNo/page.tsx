@@ -6,7 +6,7 @@ import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
 import { Button } from '@mui/material';
 import { FiLoader } from 'react-icons/fi';
-import { color } from 'framer-motion';
+import { color, invariant } from 'framer-motion';
 
 export default function HomePage() {
   const [inputValue, setInputValue] = useState('');
@@ -15,7 +15,6 @@ export default function HomePage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [result, setResult] = useState([])
   const [file, setFile] = useState<File | null>(null);
   const [filePath, setFilePath] = useState<string>("");
   const [status, setStatus] = useState<string>("");
@@ -28,6 +27,7 @@ export default function HomePage() {
   const [re, setRe] = useState(false)
   const [loader, setLoader] = useState(false)
   const [show,setShow] = useState(false)
+  const [arrayIp, setArrayIps] = useState([])
 
   const options = [
     'Memory',
@@ -39,13 +39,24 @@ export default function HomePage() {
 
   const memoryFinder = async()=>{
     setLoader(true)
+    setShow(false)
+    setArrayIps([{"ip":0, "count":0}])
     try{
       const response = await axios.post("/api/memoryFinder",{partNumber:inputValue, userId:"85oiv2tqz4"});
-      console.log(response.data)
+      let result ={}
       if (response.data.success){
-          setResult(response.data.data)
+
+          response.data.data.forEach(ip=>{
+            result[ip] = (result[ip] || 0) + 1
+          })
+
+          const ipCountArray = Object.entries(result)
+          .map(([ip, count]) => ({ ip, count }))
+          .sort((a, b) => b.count - a.count);
+
+          setArrayIps(ipCountArray)
           setShows(true)
-          console.log("data from back", response.data.data)
+          console.log("data from back", ipCountArray)
       }
       setLoader(false)
     }catch(err){
@@ -165,17 +176,13 @@ export default function HomePage() {
               <p><strong>Entered part number:</strong> {inputValue || '—'}</p>
               {
                 shows &&
-                (result.length>0 && <p><strong>Found in below IPs</strong></p> ||
-                result.length==0 && <p><strong> Not Found in any IPs</strong></p>)
+                (arrayIp.length>0 && <p><strong>Found in below SUTs</strong></p> ||
+                  arrayIp.length==0 && <p><strong> Not Found in any SUT</strong></p>)
               }
               {loader && <FiLoader size={40} />}
-              {result && result.map((i)=>{
-                return(
-                <>
-                  <p><strong>{i}</strong></p>
-                </>
-                )
-              })}
+              {shows && arrayIp.map((item) => (
+                   <li key={item.ip}>{item.ip} - {item.count} times</li>
+                ))}
             </div>
       
 
@@ -217,7 +224,7 @@ export default function HomePage() {
               </h1>
             }
             {
-              show && (lResult ? <h1 className='text-white'>Found in Local</h1> : <h1 className='text-white'>Oops! not there</h1>)
+              show && (lResult >0 ? <><h1 className='text-white'>Found in Local Inventory </h1> <div className='text-white '>{inputValue} {"-->"} {lResult}</div></> : <h1 className='text-white'>Oops! not there</h1>)
             }
           </div>
         </div>
@@ -261,6 +268,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: "center",
     textAlign: "center",
     marginBottom: "20px",
+    marginLeft: "60px",
     padding: "10px",
   },
   nextButton: {

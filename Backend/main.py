@@ -537,6 +537,7 @@ def file_converter(file_name):
  
 class IP(BaseModel):
     partNumber: str
+    userId: str
 
 # Create a connection to the MongoDB server
 client = MongoClient("mongodb+srv://abhishekdrai85:Abhishek29@cluster0.4kjtl.mongodb.net/hp?retryWrites=true&w=majority&appName=Cluster0")
@@ -547,13 +548,14 @@ db = client["hp"]
 # Access a specific collection within the database
 collection = db["suts"]
 
-processorSet= []
-result =[]
+
 @app.post('/local')
 def Local(data:IP):
-    # print(data)
+    userId = data.userId
     partNumber = data.partNumber
-    ipLists = collection.find_one({'userId':"85oiv2tqz4"})
+    ipLists = collection.find_one({'userId':userId})
+    processorSet= []
+    result =[]
     for listItem in ipLists['sut']:
         client = redfish.redfish_client(base_url=listItem['ip'], username=listItem['username'], password=listItem['password'])
         # Attempt to login with a timeout of 10 seconds
@@ -573,7 +575,7 @@ def Local(data:IP):
                         result.append(listItem['ip'])
             else:
                 print('Failed to get chassis information')
-        except requests.exceptions.Timeout:
+        except requests.exceptions.Timeout as e:
             return ({ "error": e })
     return (result)
 
@@ -611,12 +613,12 @@ def converter(data:File):
 @app.post('/localIn')
 def LocalIn(data:IP):
     filename = f"../uploads/{data.filename}.csv"
+    count = 0
     df = pd.read_csv(filename, encoding="ISO-8859-1")
     drive_str_no = df['Part number'] == data.partNumber
     for item in drive_str_no:
         if item == True:
-            return (True)
-    else:
-        return (False)
+            count += 1
+    return (count)
     
             

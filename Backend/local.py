@@ -135,6 +135,8 @@ collection = db["suts"]
 
 processorSet= []
 result =[]
+ipCounts = {}
+finalResult = []
 @app.post('/local')
 def Local(data:IP):
     # print(data)
@@ -156,6 +158,13 @@ def Local(data:IP):
                     print(resp.dict['Oem']['Hpe']['PartNumber'])
                     if (str(partNumber) == resp.dict['Oem']['Hpe']['PartNumber']):
                         result.append(listItem['ip'])
+            for ip in result:
+                if ip in ipCounts:
+                    ipCounts[ip] +=1
+                else:
+                    ipCounts[ip] = 1
+                    finalResult.append((ip, ipCounts[ip]))
+            return (finalResult)
         except Exception as e:
             return ({ "error": e })
     return (result)
