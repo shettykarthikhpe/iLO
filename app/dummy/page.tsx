@@ -286,11 +286,11 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
                {!stloading && storage?.length <=0 && <h1>Data is not available</h1>}
             </Grid>
 
-            {/* <Grid item xs={12} sm={6} md={4} lg={4}>
+            <Grid item xs={12} sm={6} md={4} lg={4}>
                {mloading && <FiLoader size={40} />}
                {!mloading && memory?.PM?.length>0 && memory?.MS?.length>0 &&  <MemoryCard data={memory} />}
                {!mloading && memory?.PM?.length <=0 && memory?.MS?.length <=0 && <h1>Data is not available</h1>}
-            </Grid> */}
+            </Grid>
 
         </Grid>
       </Box>
