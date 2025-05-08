@@ -277,14 +277,15 @@ def Summary(data:User):
     except Exception as e:
         return ({"error": e})
    
-Memo= []
-Controllers= []
-Drives= []
-DrivesCount= []
-Enclosure= []
-ControllerCount= []
+
 @app.post("/storage")
 def Storage(data:User):
+    DrivesCount= []
+    Memo= []
+    Controllers= []
+    Drives= []
+    Enclosure= []
+    ControllerCount= []
     url = data.url
     username = data.username
     password = data.password
