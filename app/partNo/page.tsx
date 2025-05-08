@@ -6,6 +6,7 @@ import Avatar from '@mui/material/Avatar';
 import axios from 'axios';
 import { Button } from '@mui/material';
 import { FiLoader } from 'react-icons/fi';
+import { color } from 'framer-motion';
 
 export default function HomePage() {
   const [inputValue, setInputValue] = useState('');
@@ -23,6 +24,7 @@ export default function HomePage() {
   const [removeFileUploader, setRemoveFileUploader] = useState(false);
   const [fileName, setFileName] = useState("")
   const [lResult, setLResult] = useState();
+  const [shows,setShows]= useState(false)
   const [re, setRe] = useState(false)
   const [loader, setLoader] = useState(false)
   const [show,setShow] = useState(false)
@@ -42,6 +44,7 @@ export default function HomePage() {
       console.log(response.data)
       if (response.data.success){
           setResult(response.data.data)
+          setShows(true)
           console.log("data from back", response.data.data)
       }
       setLoader(false)
@@ -55,13 +58,8 @@ export default function HomePage() {
   };
 
   const handleSubmit = async() => {
-    if (!selectedOption) {
-      setError('Please select an option.');
-    } else {
-      setError('');
       setIsSubmitted(true);
       memoryFinder();
-    }
   };
 
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -135,20 +133,7 @@ export default function HomePage() {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
         />
-        <select
-          className="border border-gray-300 rounded px-4 py-2"
-          value={selectedOption}
-          onChange={(e) => setSelectedOption(e.target.value)}
-        >
-          <option value="">Select an option</option>
-          {options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </select>
       </div>
-      {error && <p className="text-red-300 text-sm">{error}</p>}
       <button
         onClick={handleSubmit}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
@@ -178,7 +163,11 @@ export default function HomePage() {
             <div className="h-1/2 bg-white rounded shadow p-4 overflow-auto">
               <h2 className="font-semibold mb-2">Result</h2>
               <p><strong>Entered part number:</strong> {inputValue || '—'}</p>
-              <p><strong>Found in below IPs</strong></p>
+              {
+                shows &&
+                (result.length>0 && <p><strong>Found in below IPs</strong></p> ||
+                result.length==0 && <p><strong> Not Found in any IPs</strong></p>)
+              }
               {loader && <FiLoader size={40} />}
               {result && result.map((i)=>{
                 return(
@@ -197,6 +186,7 @@ export default function HomePage() {
                   style={styles.dragBox}
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
+                  color='white'
                 >
                   {file ? file.name : "Drag & Drop your file here"}
                 </div>
@@ -208,27 +198,22 @@ export default function HomePage() {
                   accept=".csv, .xlsx"
                   onChange={handleFileChange}
                 />
-                <Button onClick={() => document.getElementById("fileInput")?.click()} variant="outline">
+                <Button onClick={() => document.getElementById("fileInput")?.click()} variant="secondary" sx={{color: 'white'}}>
                   Choose File
                 </Button>
 
                 {file && (
-                  <Button onClick={() => {uploadFile(file)}} variant="secondary">
+                  <Button onClick={() => {uploadFile(file)}} variant="secondary" sx={{color: 'white'}}>
                     📤 Upload File
                   </Button>
                 )}
 
-                <p>{status}</p>
-                {filePath && (
-                  <p>
-                    Saved at: <strong>{filePath}</strong>
-                  </p>
-                )}
+                <p className="text-white">{status}</p>
               </div>
             </div>}
             {
               !re && removeFileUploader && <h1>
-                <Button onClick={handleLMemory}>Ready to scan local Inventory ?</Button>
+                <Button onClick={handleLMemory} variant='outlined' sx={{color: 'white'}}>Ready to scan local Inventory ?</Button>
               </h1>
             }
             {
@@ -267,8 +252,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     textAlign: "center",
   },
   dragBox: {
-    width: "300px",
+    width: "357px",
     height: "200px",
+    color:"white",
     border: "2px dashed white",
     display: "flex",
     alignItems: "center",
