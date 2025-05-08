@@ -181,7 +181,7 @@ export default function HomePage() {
               }
               {loader && <FiLoader size={40} />}
               {shows && arrayIp.map((item) => (
-                   <li key={item.ip}>{item.ip} - {item.count} times</li>
+                   <li key={item.ip}>{item.ip} - {item.count} quantity</li>
                 ))}
             </div>
       
@@ -276,4 +276,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     bottom: "20px",
     right: "20px",
   },
+  chooseButton: {
+    marginLeft: "20px"
+  }
 };
