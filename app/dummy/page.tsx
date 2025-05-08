@@ -28,6 +28,9 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
   const [dloading, setDLoading] = useState(false);
   const [sloading, setSLoading] = useState(false);
   const [ploading, setPLoading] = useState(false);
+  const [nloading, setNLoading] = useState(false);
+  const [stloading, setStLoading] = useState(false);
+  const [mloading, setMLoading] = useState(false);
 
 
   //— Add IP dialog state
@@ -137,6 +140,48 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
     }
   }
 
+  const networkGetter = async ()=>{
+    try{
+      setNLoading(true)
+      const response = await axios.post(`/api/network`, {body:{ username: currentUser, ip: currentIp, password: currentPass }});
+      setNetwork(response.data.data);
+      setTimeout(() => {
+        setNLoading(false)
+      }, 3000);
+    }catch(err){
+        setNLoading(true)
+        console.log(err)
+    }
+  }
+
+  const storageGetter = async ()=>{
+    try{
+      setStLoading(true)
+      const response = await axios.post(`/api/storage`, {body:{ username: currentUser, ip: currentIp, password: currentPass }});
+      setStorage(response.data.data);
+      setTimeout(() => {
+        setStLoading(false)
+      }, 3000);
+    }catch(err){
+        setStLoading(true)
+        console.log(err)
+    }
+  }
+
+  const memoryGetter = async ()=>{
+    try{
+      setMLoading(true)
+      const response = await axios.post(`/api/memory`, {body:{ username: currentUser, ip: currentIp, password: currentPass }});
+      setMemory(response.data.data);
+      setTimeout(() => {
+        setMLoading(false)
+      }, 3000);
+    }catch(err){
+        setMLoading(true)
+        console.log(err)
+    }
+  }
+
   useEffect(() => {
     tokenGetter();
   }, []);
@@ -149,6 +194,9 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
     deviceGetter()
     summaryGetter()
     processorGetter()
+    networkGetter()
+    storageGetter()
+    memoryGetter()
   }, [currentIp, currentUser, currentPass]);
 
   return (
@@ -204,21 +252,7 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
           justifyContent="center"
           alignItems="stretch"
         >
-          {/* {!Object.values(loading).every(Boolean) && (
-            <Grid item xs={12} style={{ textAlign: "center" }}>
-              <FiLoader size={40} />
-            </Grid>
-          )} */}
-          {/* {loading.summary && summary.length > 0 && (
-            <Grid item xs={12} sm={6} md={4} lg={4}>
-              <SummaryCard data={summary} />
-            </Grid>
-          )}
-          {loading.memory && memory.length > 0 && (
-            <Grid item xs={12} sm={6} md={4} lg={4}>
-              <MemoryCard data={memory} />
-            </Grid>
-          )} */}
+ 
         
             <Grid item xs={12} sm={6} md={4} lg={4}>
                 {dloading && <FiLoader size={40} />}
@@ -237,17 +271,26 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
                {!ploading && processor?.length>0 &&  <ProcessorCard data={processor} />}
                {!ploading && processor?.length <=0 && <h1>Data is not available</h1>}
             </Grid>
+
+            <Grid item xs={12} sm={6} md={4} lg={4}>
+               {nloading && <FiLoader size={40} />}
+               {!nloading && network?.length>0 &&  <NetworkSummaryCard rawData={network} loading={false} />}
+               {!nloading && network?.length <=0 && <h1>Data is not available</h1>}
+            </Grid>
           
-          {/* {loading.network && network.length > 0 && (
+            
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              <NetworkSummaryCard rawData={network} loading={false} />
+               {stloading && <FiLoader size={40} />}
+               {!stloading && storage?.length>0 &&  <StorageSummaryCard data={storage} loading={false} />}
+               {!stloading && storage?.length <=0 && <h1>Data is not available</h1>}
             </Grid>
-          )} */}
-          {/* {loading.storage && storage.length > 0 && (
+
             <Grid item xs={12} sm={6} md={4} lg={4}>
-              <StorageSummaryCard data={storage} loading={false} />
+               {mloading && <FiLoader size={40} />}
+               {!mloading && memory?.PM?.length>0 && memory?.MS?.length>0 &&  <MemoryCard data={memory} />}
+               {!mloading && memory?.PM?.length <=0 && memory?.MS?.length <=0 && <h1>Data is not available</h1>}
             </Grid>
-          )} */} 
+
         </Grid>
       </Box>
 
