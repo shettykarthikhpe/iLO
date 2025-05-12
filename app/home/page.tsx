@@ -13,25 +13,26 @@ const HomePage = () => {
   const [ips, setIps] = useState<string[]>([]);
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchIps = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
+  const fetchIps = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-        const response = await axios.post("/api/getSut", {
-          userId: token,
-        });
+      console.log("Token:", token)
+      const response = await axios.post("/api/getSut", {
+        userId: token,
+      });
 
-        if (response.data.success) {
-          const ipList = response.data.data.sut.map((item: any) => item.ip);
-          setIps(ipList);
-        }
-      } catch (error) {
-        console.error(error);
+      if (response.data.success) {
+        const ipList = response.data.sut.map((item: any) => item.ip);
+        setIps(ipList);
       }
-    };
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  useEffect(() => {
     fetchIps();
   }, []);
 
@@ -66,7 +67,7 @@ const HomePage = () => {
     <main className="min-h-screen flex items-center justify-center bg-[#0f3555] px-4">
       <Card className="w-full max-w-xl p-6 border-muted shadow-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl font-semibold">Manage IP Addresses</CardTitle>
+          <CardTitle className="text-xl font-semibold">Manage SUTs</CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-4">
@@ -88,7 +89,7 @@ const HomePage = () => {
             ))}
           </ul>
 
-          <div className="flex gap-2">
+          <div className="flex justify-center gap-2">
             <AddIpDialog onIpAdded={handleIpAdded} disabled={ips.length >= 5} />
           </div>
 
