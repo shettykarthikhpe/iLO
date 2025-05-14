@@ -201,8 +201,8 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
   }, [currentIp, currentUser, currentPass]);
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      <h1 className="text-center mt-5 ml-16 font-bold text-[#02dea2] text-2xl px-10">
+    <div style={{ display: "flex", height: "100vh" , flexDirection: "column"}}>
+      <h1 className="text-center mt-5 ml-16 font-bold text-[#02dea2] text-3xl px-10">
         {currentIp}
       </h1>
 
@@ -367,7 +367,6 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   sidebarButtons: {
     display: "flex",
-    marginTop: "auto",
     justifyContent: "center",
   },
   menuButtonWrapper: {
