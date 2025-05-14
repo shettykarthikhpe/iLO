@@ -22,12 +22,12 @@ export default function HomePage() {
   const [contentLoader, setContentLoader] = useState(false);
   const [removeFileUploader, setRemoveFileUploader] = useState(false);
   const [fileName, setFileName] = useState("")
-  const [lResult, setLResult] = useState();
+  const [lResult, setLResult] = useState("");
   const [shows,setShows]= useState(false)
   const [re, setRe] = useState(false)
   const [loader, setLoader] = useState(false)
   const [show,setShow] = useState(false)
-  const [arrayIp, setArrayIps] = useState([])
+  const [arrayIp, setArrayIps] = useState([{}])
 
   const options = [
     'Memory',
@@ -43,16 +43,16 @@ export default function HomePage() {
     setArrayIps([{"ip":0, "count":0}])
     try{
       const response = await axios.post("/api/memoryFinder",{partNumber:inputValue, userId:"85oiv2tqz4"});
-      let result ={}
+      let result:any ={}
       if (response.data.success){
 
-          response.data.data.forEach(ip=>{
+          response.data.data.forEach((ip: string | number) =>{
             result[ip] = (result[ip] || 0) + 1
           })
 
           const ipCountArray = Object.entries(result)
           .map(([ip, count]) => ({ ip, count }))
-          .sort((a, b) => b.count - a.count);
+          .sort((a:any, b:any) => b.count - a.count);
 
           setArrayIps(ipCountArray)
           setShows(true)
@@ -180,7 +180,7 @@ export default function HomePage() {
                   arrayIp.length==0 && <p><strong> Not Found in any SUT</strong></p>)
               }
               {loader && <FiLoader size={40} />}
-              {shows && arrayIp.map((item) => (
+              {shows && arrayIp.map((item:any) => (
                    <li key={item.ip}>{item.ip} - {item.count} quantity</li>
                 ))}
             </div>
@@ -205,12 +205,12 @@ export default function HomePage() {
                   accept=".csv, .xlsx"
                   onChange={handleFileChange}
                 />
-                <Button onClick={() => document.getElementById("fileInput")?.click()} variant="secondary" sx={{color: 'white'}}>
+                <Button onClick={() => document.getElementById("fileInput")?.click()} sx={{color: 'white'}}>
                   Choose File
                 </Button>
 
                 {file && (
-                  <Button onClick={() => {uploadFile(file)}} variant="secondary" sx={{color: 'white'}}>
+                  <Button onClick={() => {uploadFile(file)}} sx={{color: 'white'}}>
                     📤 Upload File
                   </Button>
                 )}
@@ -224,7 +224,7 @@ export default function HomePage() {
               </h1>
             }
             {
-              show && (lResult >0 ? <><h1 className='text-white'>Found in Local Inventory </h1> <div className='text-white '>{inputValue} {"-->"} {lResult}</div></> : <h1 className='text-white'>Oops! not there</h1>)
+              show && (lResult.length >0 ? <><h1 className='text-white'>Found in Local Inventory </h1> <div className='text-white '>{inputValue} {"-->"} {lResult}</div></> : <h1 className='text-white'>Oops! not there</h1>)
             }
           </div>
         </div>

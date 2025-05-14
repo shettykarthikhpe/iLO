@@ -320,7 +320,7 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
               style={styles.input}
             />
             <div style={styles.dialogButtons}>
-              <Button variant="outline" onClick={() => setShowDialog(false)}>
+              <Button onClick={() => setShowDialog(false)}>
                 Cancel
               </Button>
               <Button onClick={handleAddIp}>Add</Button>
