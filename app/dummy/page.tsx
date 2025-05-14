@@ -202,7 +202,7 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
-      <h1 className="text-center mt-5 ml-16 font-bold text-green-800 text-2xl">
+      <h1 className="text-center mt-5 ml-16 font-bold text-[#02dea2] text-2xl px-10">
         {currentIp}
       </h1>
 
@@ -210,7 +210,7 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
       {showSidebar && (
         <div style={styles.sidebar}>
           <div className="flex-items-center">
-            <Button onClick={() => window.location.reload()}>
+            <Button onClick={() => window.location.reload()} sx={{color: 'white'}}>
               <Avatar src="/iLOlogo.png" sx={{ width: 60, height: 60 }} />{" "}
               <h3 style={styles.sidebarTitle}>IP List</h3>
             </Button>
@@ -341,7 +341,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     left: 0,
     height: "100vh",
     width: "300px",
-    backgroundColor: "#0f3555",
+    backgroundColor: "#f4f7f7",
     borderRight: "1px solid #ddd",
     padding: "80px 20px 20px",
     display: "flex",
@@ -352,9 +352,10 @@ const styles: { [key: string]: React.CSSProperties } = {
   sidebarTitle: {
     fontSize: "1.5rem",
     fontWeight: "bold",
-    color: "white",
+    color: "#009b74",
     borderBottom: "1px solid #eee",
-    paddingBottom: "10px",
+    paddingBottom: "2px",
+    paddingLeft: "20px"
   },
   ipItem: {
     display: "flex",
@@ -365,8 +366,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: "6px",
   },
   sidebarButtons: {
-    marginTop: "auto",
     display: "flex",
+    marginTop: "auto",
     justifyContent: "center",
   },
   menuButtonWrapper: {
