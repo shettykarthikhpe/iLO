@@ -106,7 +106,7 @@ export default function Home() {
     <div style={{ display: "flex", height: "100vh", background: "#0f3555"}}>
       {!ipClciked && loading && (
         <div className="text-center mt-20 ml-30">
-          <FiLoader size={40} />
+          <FiLoader color="white" size={40} />
         </div>
       )}
       {!ipClciked && !loading && (
