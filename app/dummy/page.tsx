@@ -55,7 +55,7 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
   const getIp = async () => {
     try {
       const response = await axios.post("/api/getSut", {
-        userId: JSON.stringify(token),
+        userId: token,
       });
       if (response.data.success) {
         setIpList(response.data.data.sut);
