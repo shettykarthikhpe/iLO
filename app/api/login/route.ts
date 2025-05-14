@@ -2,6 +2,7 @@ import axios from "axios";
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import User from "../../models/User";
+import mongoose from "mongoose";
 
 
 
@@ -23,6 +24,10 @@ export async function POST(req: NextRequest) {
         username: user_name,
         password: password
       });
+
+      mongoose.connect(
+        "mongodb+srv://abhishekdrai85:Abhishek29@cluster0.4kjtl.mongodb.net/hp?retryWrites=true&w=majority&appName=Cluster0");
+      
 
       const exisitingUser = await User.findOne({name:name});
       
