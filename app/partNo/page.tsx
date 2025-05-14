@@ -224,7 +224,7 @@ export default function HomePage() {
               </h1>
             }
             {
-              show && (lResult.length >0 ? <><h1 className='text-white'>Found in Local Inventory </h1> <div className='text-white '>{inputValue} {"-->"} {lResult}</div></> : <h1 className='text-white'>Oops! not there</h1>)
+              show && (lResult != "" ? <><h1 className='text-white'>Found in Local Inventory </h1> <div className='text-white '>{inputValue} {"-->"} {lResult}</div></> : <h1 className='text-white'>Oops! not there</h1>)
             }
           </div>
         </div>
