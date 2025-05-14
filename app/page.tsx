@@ -41,7 +41,7 @@ export default function Home() {
   }
 
   const handlePush = ()=>{
-    redirect(`/Product`);
+    redirect(`/home`);
   }
 
   const handleLogin = async() =>{

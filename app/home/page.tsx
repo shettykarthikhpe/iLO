@@ -13,27 +13,26 @@ const HomePage = () => {
   const [ips, setIps] = useState<string[]>([]);
   const router = useRouter();
 
-  const fetchIps = async () => {
-    try {
+  const fetchIp = async() =>{
+    try{
       const token = localStorage.getItem("token");
       if (!token) return;
 
-      console.log("Token:", token)
-      const response = await axios.post("/api/getSut", {
-        userId: token,
-      });
+      const response = await axios.post("/api/getSut",{
+        userId:token
+      })
 
       if (response.data.success) {
         const ipList = response.data.sut.map((item: any) => item.ip);
         setIps(ipList);
       }
-    } catch (error) {
-      console.error(error);
+    }catch(err){
+      console.log(err)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchIps();
+    fetchIp();
   }, []);
 
   const handleRemoveIp = async (index: number) => {

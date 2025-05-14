@@ -39,7 +39,7 @@ export default function Home() {
   const getIp = async () => {
     try {
       const response = await axios.post("/api/getSut", {
-        userId: JSON.stringify(token),
+        userId: token,
       });
       console.log(response.data.data.sut);
       if (response.data.success) {
@@ -48,7 +48,7 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     }
-  };
+  }; 
 
   useEffect(() => {
     token && getIp();
@@ -103,7 +103,7 @@ export default function Home() {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", background: "#0f3555" }}>
+    <div style={{ display: "flex", height: "100vh" }}>
       {!ipClciked && loading && (
         <div className="text-center mt-20 ml-30">
           <FiLoader size={40} />
@@ -172,10 +172,10 @@ export default function Home() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              background: "#0f3555",
+              background: "#f7f9fb",
             }}
           >
-            <h1 style={{ fontSize: "2rem", color: "white" }}>
+            <h1 style={{ fontSize: "2rem", color: "#333" }}>
               {ipList.length === 0
                 ? "No IPs added. Use the menu to add one!"
                 : "Welcome!"}
@@ -273,6 +273,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "1px solid #ccc",
   },
   sidebarButtons: {
+    marginTop: "auto",
     display: "flex",
     justifyContent: "space-between",
   },

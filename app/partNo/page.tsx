@@ -41,8 +41,9 @@ export default function HomePage() {
     setLoader(true)
     setShow(false)
     setArrayIps([{"ip":0, "count":0}])
+    const token = localStorage.getItem("token")
     try{
-      const response = await axios.post("/api/memoryFinder",{partNumber:inputValue, userId:"85oiv2tqz4"});
+      const response = await axios.post("/api/memoryFinder",{partNumber:inputValue, userId: token});
       let result:any ={}
       if (response.data.success){
 

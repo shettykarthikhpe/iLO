@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const userId = body.userId
-
-    const exisIp = await Sut.findOne({userId: JSON.parse(userId)});
+    
+    const exisIp = await Sut.findOne({userId: userId});
     
     if(!exisIp){
       return NextResponse.json({ success: true, data: "No SUT's found"});
