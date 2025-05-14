@@ -48,14 +48,14 @@ export default function ManualAddIpDialog({ onIpAdded, disabled }: Props) {
 
  return (
  <>
- <Button disabled={disabled} onClick={() => setShowModal(true)}>
+ <Button disabled={disabled} onClick={() => setShowModal(true)} >
  Add
  </Button>
 
  {showModal && (
  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
  <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 space-y-4">
- <h2 className="text-xl font-semibold">Add New IP</h2>
+ <h2 className="text-xl font-semibold">Add New SUT</h2>
 
  <input
  className="w-full border px-3 py-2 rounded"

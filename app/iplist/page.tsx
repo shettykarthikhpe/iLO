@@ -103,7 +103,7 @@ export default function Home() {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
+    <div style={{ display: "flex", height: "100vh", background: "#0f3555" }}>
       {!ipClciked && loading && (
         <div className="text-center mt-20 ml-30">
           <FiLoader size={40} />
@@ -172,10 +172,10 @@ export default function Home() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              background: "#f7f9fb",
+              background: "#0f3555",
             }}
           >
-            <h1 style={{ fontSize: "2rem", color: "#333" }}>
+            <h1 style={{ fontSize: "2rem", color: "white" }}>
               {ipList.length === 0
                 ? "No IPs added. Use the menu to add one!"
                 : "Welcome!"}
@@ -273,7 +273,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     border: "1px solid #ccc",
   },
   sidebarButtons: {
-    marginTop: "auto",
     display: "flex",
     justifyContent: "space-between",
   },
