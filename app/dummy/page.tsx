@@ -253,41 +253,39 @@ const Dummy: React.FC<PageProps> = ({ ip, username, password }) => {
           justifyContent="center"
           alignItems="stretch"
         >
- 
-        
             <Grid item xs={12} sm={6} md={4} lg={4}>
-                {dloading && <FiLoader size={40} />}
+                {dloading && <FiLoader color="white" size={40} />}
                {!dloading && device?.data?.length>0 &&  <DeviceCard data={device} />}
                {!dloading && device?.data ==null && <h1>Data is not available</h1>}
             </Grid>
 
             <Grid item xs={12} sm={6} md={4} lg={4}>
-               {sloading && <FiLoader size={40} />}
+               {sloading && <FiLoader color="white" size={40} />}
                {!sloading && summary?.length>0 &&  <SummaryCard data={summary} />}
                {!sloading && summary?.length <=0 && <h1>Data is not available</h1>}
             </Grid>
 
             <Grid item xs={12} sm={6} md={4} lg={4}>
-               {ploading && <FiLoader size={40} />}
+               {ploading && <FiLoader color="white" size={40} />}
                {!ploading && processor?.length>0 &&  <ProcessorCard data={processor} />}
                {!ploading && processor?.length <=0 && <h1>Data is not available</h1>}
             </Grid>
 
             <Grid item xs={12} sm={6} md={4} lg={4}>
-               {nloading && <FiLoader size={40} />}
+               {nloading && <FiLoader color="white"size={40} />}
                {!nloading && network?.length>0 &&  <NetworkSummaryCard rawData={network} loading={false} />}
                {!nloading && network?.length <=0 && <h1>Data is not available</h1>}
             </Grid>
           
             
             <Grid item xs={12} sm={6} md={4} lg={4}>
-               {stloading && <FiLoader size={40} />}
+               {stloading && <FiLoader color="white" size={40} />}
                {!stloading && storage?.length>0 &&  <StorageSummaryCard data={storage} loading={false} />}
                {!stloading && storage?.length <=0 && <h1>Data is not available</h1>}
             </Grid>
 
             <Grid item xs={12} sm={6} md={4} lg={4}>
-               {mloading && <FiLoader size={40} />}
+               {mloading && <FiLoader color="white" size={40} />}
                {!mloading && memory?.PM?.length>0 && memory?.MS?.length>0 &&  <MemoryCard data={memory} />}
                {!mloading && memory?.PM?.length <=0 && memory?.MS?.length <=0 && <h1>Data is not available</h1>}
             </Grid>
