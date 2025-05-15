@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trash2 } from "lucide-react";
 import AddIpDialog from "@/components/ui/addIpDialog";
 import axios from "axios";
+import HexLogo from "../Components/iLOlogo";
 
 const HomePage = () => {
   const [ips, setIps] = useState<string[]>([]);
@@ -62,8 +63,11 @@ const HomePage = () => {
     setIps((prevIps) => [...prevIps, newIp]);
   };
 
-  return (
-    <main className="min-h-screen flex items-center justify-center bg-[#0f3555] px-4">
+
+return (
+  <main className="min-h-screen flex items-center justify-center bg-[#0f3555] px-4">
+    <div className="flex flex-col md:flex-row items-center justify-center gap-12">
+      <HexLogo />
       <Card className="w-full max-w-xl p-6 border-muted shadow-md">
         <CardHeader className="text-center">
           <CardTitle className="text-xl font-semibold">Manage SUTs</CardTitle>
@@ -102,8 +106,11 @@ const HomePage = () => {
           </div>
         </CardContent>
       </Card>
-    </main>
-  );
-};
+    </div>
+  </main>
+);
+}
 
 export default HomePage;
+
+
